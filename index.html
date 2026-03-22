@@ -328,7 +328,7 @@ const DISTRACTORS = [
   "🚂","🍄","🦁","🎯","🌙","💫","🐙","🎲","🏰","🌊",
   "🦆","🎵","🍋","🐧","🎀","🐌","🍇","🐺","🏄","🌋",
   "🎻","🦅","🍓","🐸","🍉","🛝","🎡","🧁","🪸","🌵",
-  "🤖","👄","💣","👠","🎱","🎺","🐞","🍔","🏍️","📺"
+  "🤖","👄","💣","👠","🎱","🎺","🐞","🍔","🏍️","📺",
   "🔫","🏀","🧸","🍩","🧿","💾","📼","☂️","🔭","📢"
 ];
 
@@ -580,8 +580,7 @@ function nextPuzzle() {
     document.getElementById("winTitle").textContent = "Tu as réussi tous les combos !";
     document.getElementById("winScore").textContent = `Score total : ${score} / ${PUZZLES.length}`;
     document.getElementById("continueBtn").textContent = "Recommencer";
-    document.getElementById("continueBtn").onclick = resetGame;
-    document.getElementById("winPanel").classList.add("show");
+        document.getElementById("winPanel").classList.add("show");
     return;
   }
   livesLeft = 4;
@@ -598,8 +597,6 @@ function resetGame() {
   gameOver = false;
   document.getElementById("winPanel").classList.remove("show");
   document.getElementById("losePanel").classList.remove("show");
-  document.getElementById("continueBtn").textContent = "Continuer ▶";
-  document.getElementById("continueBtn").onclick = nextPuzzle;
   document.getElementById("message").textContent = "";
   updateLives();
   loadPuzzle();
@@ -616,7 +613,13 @@ function loadPuzzle() {
 }
 
 document.getElementById("validateBtn").addEventListener("click", validate);
-document.getElementById("continueBtn").addEventListener("click", nextPuzzle);
+document.getElementById("continueBtn").addEventListener("click", () => {
+  if (currentPuzzleIndex >= PUZZLES.length) {
+    resetGame();
+  } else {
+    nextPuzzle();
+  }
+});
 document.getElementById("restartBtn").addEventListener("click", resetGame);
 </script>
 </body>
