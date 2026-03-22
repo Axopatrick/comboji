@@ -195,35 +195,43 @@
     gap: 0;
   }
   #titlePuzzle {
-    font-size: 90px;
+    font-size: 110px;
     animation: float 2s ease-in-out infinite;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
   }
   @keyframes float {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-18px); }
   }
   #titleName {
-    font-size: 3rem;
-    font-weight: 900;
-    letter-spacing: 10px;
-    color: #fff;
-    margin-bottom: 48px;
+  width: 500px;
+  margin-top: -35px;
+  margin-bottom: -20px;
+  height: auto;
+  filter: drop-shadow(4px 4px 0px rgba(0, 0, 0, 0.5));
+
+  }
+    #gameLogo {
+  width: 300px;
+  height: auto;
+  margin-top: -30px;
+  margin-bottom: -50px;
+  filter: drop-shadow(4px 4px 0px rgba(0, 0, 0, 0.5));
   }
   #playBtn {
     font-size: 1.2rem;
     padding: 16px 52px;
     border-radius: 50px;
     border: none;
-    background: linear-gradient(135deg, #e94560, #f5a623);
+    background: linear-gradient(135deg, #478a51, #a3b653);
     color: white;
     font-weight: bold;
     cursor: pointer;
     letter-spacing: 2px;
     transition: transform 0.2s, box-shadow 0.2s;
-    box-shadow: 0 4px 24px rgba(233,69,96,0.4);
+    box-shadow: 0 4px 24px rgba(76,131,61,0.4);
   }
-  #playBtn:hover { transform: scale(1.08); box-shadow: 0 6px 32px rgba(233,69,96,0.6); }
+  #playBtn:hover { transform: scale(1.08); box-shadow: 0 6px 32px rgba(76,131,61,0.6); }
 
   #game { display: none; }
 </style>
@@ -233,16 +241,16 @@
 <!-- ===== ÉCRAN TITRE ===== -->
 <div id="titleScreen">
   <div id="titlePuzzle">🧩</div>
-  <div id="titleName">COMBOJI</div>
+  <img src="logocomboji.png" alt="Comboji" id="titleName">
   <button id="playBtn" onclick="startGame()">▶ JOUER</button>
 </div>
 
 <!-- ===== JEU ===== -->
 <div id="game">
-  <h1>COMBOJI</h1>
+  <img src="logocomboji.png" alt="Comboji" id="gameLogo">
 
   <div class="target-zone">
-    <div class="target-label"><strong>Crée cet emoji</strong></div>
+    <div class="target-label"><strong>Combine les emojis pour créer celui-ci</strong></div>
     <div class="target-emoji" id="targetEmoji"></div>
     <div class="hint-box" id="hintBox"></div>
   </div>
@@ -277,12 +285,13 @@
 </div>
 
 <script>
-const PUZZLES = [
+let PUZZLES = [
   { target:"👂", hint:"Vincent",     solution:["🎨","🌻"] },
   { target:"🦋", hint:"Mue",         solution:["🐛","⏳"] },
   { target:"🌈", hint:"Réfraction",  solution:["☀️","🌧️"] },
   { target:"🎠", hint:"Pompon",      solution:["🐴","🎡"] },
   { target:"🍯", hint:"Bzzz",        solution:["🐝","🌸"] },
+  { target:"🛟", hint:"1912",        solution:["🧊","🛳️"] },
   { target:"🚀", hint:"2001",        solution:["🐒","🦴","⌛"] },
   { target:"🍕", hint:"Naples",      solution:["🍅","🧀","👨‍🍳"] },
   { target:"⚡", hint:"Franklin",    solution:["🗝️","☁️","🪁"] },
@@ -290,21 +299,21 @@ const PUZZLES = [
   { target:"🍿", hint:"Hollywood",   solution:["🌽","🔥","🎬"] },
   { target:"🦕", hint:"Ambre",       solution:["🏝️","🧬","🦟"] },
   { target:"🧙", hint:"Placard",     solution:["⚡","🦉","🪄"] },
-  { target:"🐉", hint:"Daenerys",    solution:["🦎","🔥","🪽"] },
+  { target:"🐉", hint:"Mythologique",    solution:["🦎","🔥","🪽"] },
   { target:"⛄", hint:"Hiver",       solution:["🎩","🥕","🌨️"] },
   { target:"🧜", hint:"Chimère",     solution:["👩","🐟","🌊"] },
   { target:"🍎", hint:"Défendu",     solution:["🐍","🌳","👫"] },
   { target:"🧛", hint:"Canines",     solution:["🦇","🩸","⚰️"] },
   { target:"💎", hint:"Heisenberg",  solution:["🚐","⚗️","🌵"] },
   { target:"🥷", hint:"Cowabunga",   solution:["🐢","🧪","🍕"] },
-  { target:"🧝‍♀️", hint:"Légende",  solution:["⚔️","🛡️","🧚"] },
+  { target:"🧝‍♀️", hint:"Légende",  solution:["🗡️","🛡️","🧚"] },
 ];
 
 const DISTRACTORS = [
   "🌍","🎸","🏔️","🍦","🐬","🎭","🌺","🦊","🏖️","🎪",
   "🚂","🍄","🦁","🎯","🌙","💫","🐙","🎲","🏰","🌊",
   "🦄","🎵","🍋","🐧","🎀","🌴","🍇","🐺","🏄","🌋",
-  "🎻","🦅","🍓","🐸","🌻","🦈","🎡","🧁","🪸","🌵",
+  "🎻","🦅","🍓","🐸","🍉","🦈","🎡","🧁","🪸","🌵",
   "🤖","👄","💣","👠","🎱","🎺","🐞","🍔","🏍️","📺"
 ];
 
@@ -316,7 +325,23 @@ let score = 0;
 let draggedEmoji = null;
 let draggedFrom = null;
 
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+function shuffleBySize(puzzles) {
+  const twoEmojis = puzzles.filter(p => p.solution.length === 2);
+  const threeEmojis = puzzles.filter(p => p.solution.length === 3);
+  return [...shuffle(twoEmojis), ...shuffle(threeEmojis)];
+}
+
 function startGame() {
+  PUZZLES = shuffleBySize(PUZZLES); // ← on réordonne au lancement
+  currentPuzzleIndex = 0;           // ← on repart du début
   document.getElementById("titleScreen").style.display = "none";
   document.getElementById("game").style.display = "contents";
   loadPuzzle();
@@ -329,8 +354,10 @@ function buildGrid() {
   const puzzle = getCurrentPuzzle();
   const solution = puzzle.solution;
   const needed = 16 - solution.length;
-  const shuffled = [...DISTRACTORS].sort(() => Math.random() - 0.5);
-  const distractors = shuffled.slice(0, needed);
+const shuffled = [...DISTRACTORS]
+  .filter(d => !solution.includes(d)) // ← on exclut ceux déjà dans la solution
+  .sort(() => Math.random() - 0.5);
+const distractors = shuffled.slice(0, needed);
   const allEmojis = [...solution, ...distractors].sort(() => Math.random() - 0.5);
 
   const grid = document.getElementById("grid");
