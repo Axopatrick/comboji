@@ -574,8 +574,9 @@ function showLosePanel() {
 function nextPuzzle() {
   document.getElementById("winPanel").classList.remove("show");
   currentPuzzleIndex++;
-  if (currentPuzzleIndex >= PUZZLES.length) {
-    document.getElementById("winTitle").textContent = "🏆 Tu as tout terminé !";
+ if (currentPuzzleIndex >= PUZZLES.length) {
+    document.getElementById("winEmoji").textContent = "🏆"; // ← ici
+    document.getElementById("winTitle").textContent = "Tu as réussi tous les combos !";
     document.getElementById("winScore").textContent = `Score total : ${score} / ${PUZZLES.length}`;
     document.getElementById("continueBtn").textContent = "Recommencer";
     document.getElementById("continueBtn").onclick = resetGame;
