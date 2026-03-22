@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comboji</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: sans-serif;
+    background: #1a1a2e;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    gap: 24px;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+    margin-top: 10px;
+    letter-spacing: 4px;
+    font-weight: 800;
+  }
+
+  .target-zone {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .target-label { font-size: 0.9rem; opacity: 0.7; }
+  .target-label strong { font-weight: 800; }
+  .target-emoji { font-size: 3rem; }
+  .hint-box { font-size: 0.85rem; opacity: 0.6; letter-spacing: 1px; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 64px);
+    gap: 10px;
+  }
+
+  .emoji-cell {
+    width: 64px;
+    height: 64px;
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #16213e;
+    border-radius: 12px;
+    border: 2px solid #0f3460;
+    cursor: grab;
+    user-select: none;
+    transition: transform 0.1s, border-color 0.2s;
+  }
+  .emoji-cell:hover { transform: scale(1.1); border-color: #e94560; }
+  .emoji-cell.dragging { opacity: 0.4; }
+  .emoji-cell.used { opacity: 0.3; pointer-events: none; }
+
+  .slots { display: flex; gap: 16px; }
+
+  .slot {
+    width: 72px;
+    height: 72px;
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #16213e;
+    border-radius: 12px;
+    border: 2px dashed #0f3460;
+    transition: border-color 0.3s, background 0.3s;
+    position: relative;
+    cursor: pointer;
+  }
+  .slot.drag-over { border-color: #e94560; background: #1f2a50; }
+  .slot.correct { border-color: #4caf50; background: #1a3a1a; }
+  .slot.wrong { border-color: #f44336; background: #3a1a1a; }
+  .slot.shake { animation: shake 0.4s ease; }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+  .slot .remove-btn {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 20px;
+    height: 20px;
+    background: #e94560;
+    border-radius: 50%;
+    font-size: 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    color: white;
+  }
+
+  .validate-btn {
+    padding: 12px 32px;
+    font-size: 1rem;
+    background: #e94560;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    letter-spacing: 1px;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+  .validate-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .validate-btn:not(:disabled):hover { transform: scale(1.05); }
+
+  .lives { font-size: 1.2rem; letter-spacing: 4px; }
+
+  .message { font-size: 0.95rem; min-height: 1.4em; opacity: 0.85; }
+
+  .panel-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+  }
+  .panel-overlay.show { display: flex; }
+
+  .panel {
+    background: #16213e;
+    border: 2px solid #0f3460;
+    border-radius: 20px;
+    padding: 36px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    max-width: 320px;
+    text-align: center;
+  }
+  .panel-emoji { font-size: 3.5rem; }
+  .panel-title { font-size: 1.3rem; font-weight: 800; }
+  .panel-score { font-size: 1.1rem; opacity: 0.8; }
+  .panel-btn {
+    margin-top: 8px;
+    padding: 12px 28px;
+    font-size: 1rem;
+    background: #e94560;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    letter-spacing: 1px;
+    transition: transform 0.1s;
+  }
+  .panel-btn:hover { transform: scale(1.05); }
+
+  .confetti-piece {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    animation: confettiFall linear forwards;
+    z-index: 200;
+    pointer-events: none;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* ===== ÉCRAN TITRE ===== */
+  #titleScreen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100%;
+    position: fixed;
+    inset: 0;
+    background: #1a1a2e;
+    z-index: 999;
+    gap: 0;
+  }
+  #titlePuzzle {
+    font-size: 90px;
+    animation: float 2s ease-in-out infinite;
+    margin-bottom: 10px;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-18px); }
+  }
+  #titleName {
+    font-size: 3rem;
+    font-weight: 900;
+    letter-spacing: 10px;
+    color: #fff;
+    margin-bottom: 48px;
+  }
+  #playBtn {
+    font-size: 1.2rem;
+    padding: 16px 52px;
+    border-radius: 50px;
+    border: none;
+    background: linear-gradient(135deg, #e94560, #f5a623);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    letter-spacing: 2px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 24px rgba(233,69,96,0.4);
+  }
+  #playBtn:hover { transform: scale(1.08); box-shadow: 0 6px 32px rgba(233,69,96,0.6); }
+
+  #game { display: none; }
+</style>
+</head>
+<body>
+
+<!-- ===== ÉCRAN TITRE ===== -->
+<div id="titleScreen">
+  <div id="titlePuzzle">🧩</div>
+  <div id="titleName">COMBOJI</div>
+  <button id="playBtn" onclick="startGame()">▶ JOUER</button>
+</div>
+
+<!-- ===== JEU ===== -->
+<div id="game">
+  <h1>COMBOJI</h1>
+
+  <div class="target-zone">
+    <div class="target-label"><strong>Crée cet emoji</strong></div>
+    <div class="target-emoji" id="targetEmoji"></div>
+    <div class="hint-box" id="hintBox"></div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+  <div class="slots" id="slots"></div>
+
+  <button class="validate-btn" id="validateBtn" disabled>VALIDER</button>
+
+  <div class="lives" id="lives"></div>
+  <div class="message" id="message"></div>
+
+  <!-- Panel victoire manche -->
+  <div class="panel-overlay" id="winPanel">
+    <div class="panel">
+      <div class="panel-emoji" id="winEmoji"></div>
+      <div class="panel-title" id="winTitle"></div>
+      <div class="panel-score" id="winScore"></div>
+      <button class="panel-btn" id="continueBtn">Continuer ▶</button>
+    </div>
+  </div>
+
+  <!-- Panel défaite -->
+  <div class="panel-overlay" id="losePanel">
+    <div class="panel">
+      <div class="panel-emoji">💀</div>
+      <div class="panel-title">Perdu !</div>
+      <div class="panel-score" id="loseScore"></div>
+      <button class="panel-btn" id="restartBtn">Recommencer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const PUZZLES = [
+  { target:"👂", hint:"Vincent",     solution:["🎨","🌻"] },
+  { target:"🦋", hint:"Mue",         solution:["🐛","⏳"] },
+  { target:"🌈", hint:"Réfraction",  solution:["☀️","🌧️"] },
+  { target:"🎠", hint:"Pompon",      solution:["🐴","🎡"] },
+  { target:"🍯", hint:"Bzzz",        solution:["🐝","🌸"] },
+  { target:"🚀", hint:"2001",        solution:["🐒","🦴","⌛"] },
+  { target:"🍕", hint:"Naples",      solution:["🍅","🧀","👨‍🍳"] },
+  { target:"⚡", hint:"Franklin",    solution:["🗝️","☁️","🪁"] },
+  { target:"🧟", hint:"Romero",      solution:["🪦","🌙","🧠"] },
+  { target:"🍿", hint:"Hollywood",   solution:["🌽","🔥","🎬"] },
+  { target:"🦕", hint:"Ambre",       solution:["🏝️","🧬","🦟"] },
+  { target:"🧙", hint:"Placard",     solution:["⚡","🦉","🪄"] },
+  { target:"🐉", hint:"Daenerys",    solution:["🦎","🔥","🪽"] },
+  { target:"⛄", hint:"Hiver",       solution:["🎩","🥕","🌨️"] },
+  { target:"🧜", hint:"Chimère",     solution:["👩","🐟","🌊"] },
+  { target:"🍎", hint:"Défendu",     solution:["🐍","🌳","👫"] },
+  { target:"🧛", hint:"Canines",     solution:["🦇","🩸","⚰️"] },
+  { target:"💎", hint:"Heisenberg",  solution:["🚐","⚗️","🌵"] },
+  { target:"🥷", hint:"Cowabunga",   solution:["🐢","🧪","🍕"] },
+  { target:"🧝‍♀️", hint:"Légende",  solution:["⚔️","🛡️","🧚"] },
+];
+
+const DISTRACTORS = [
+  "🌍","🎸","🏔️","🍦","🐬","🎭","🌺","🦊","🏖️","🎪",
+  "🚂","🍄","🦁","🎯","🌙","💫","🐙","🎲","🏰","🌊",
+  "🦄","🎵","🍋","🐧","🎀","🌴","🍇","🐺","🏄","🌋",
+  "🎻","🦅","🍓","🐸","🌻","🦈","🎡","🧁","🪸","🌵"
+];
+
+let currentPuzzleIndex = 0;
+let slots = [];
+let livesLeft = 4;
+let gameOver = false;
+let score = 0;
+let draggedEmoji = null;
+let draggedFrom = null;
+
+function startGame() {
+  document.getElementById("titleScreen").style.display = "none";
+  document.getElementById("game").style.display = "contents";
+  loadPuzzle();
+  updateLives();
+}
+
+function getCurrentPuzzle() { return PUZZLES[currentPuzzleIndex]; }
+
+function buildGrid() {
+  const puzzle = getCurrentPuzzle();
+  const solution = puzzle.solution;
+  const needed = 16 - solution.length;
+  const shuffled = [...DISTRACTORS].sort(() => Math.random() - 0.5);
+  const distractors = shuffled.slice(0, needed);
+  const allEmojis = [...solution, ...distractors].sort(() => Math.random() - 0.5);
+
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+
+  allEmojis.forEach((emoji) => {
+    const cell = document.createElement("div");
+    cell.className = "emoji-cell";
+    cell.textContent = emoji;
+    cell.draggable = true;
+    cell.dataset.emoji = emoji;
+
+    cell.addEventListener("dragstart", () => {
+      draggedEmoji = emoji;
+      draggedFrom = "grid";
+      cell.classList.add("dragging");
+    });
+    cell.addEventListener("dragend", () => cell.classList.remove("dragging"));
+
+    cell.addEventListener("click", () => {
+      if (gameOver || cell.classList.contains("used")) return;
+      const emptyIndex = slots.indexOf(null);
+      if (emptyIndex !== -1) {
+        slots[emptyIndex] = emoji;
+        buildSlots();
+        updateValidateBtn();
+      }
+    });
+
+    grid.appendChild(cell);
+  });
+}
+
+function buildSlots() {
+  const puzzle = getCurrentPuzzle();
+  const slotCount = puzzle.solution.length;
+  const container = document.getElementById("slots");
+  container.innerHTML = "";
+
+  const gridCells = document.querySelectorAll(".emoji-cell");
+  gridCells.forEach(c => c.classList.remove("used"));
+  const tempCount = {};
+  slots.filter(s => s !== null).forEach(e => { tempCount[e] = (tempCount[e] || 0) + 1; });
+  const marked = {};
+  gridCells.forEach(cell => {
+    const e = cell.dataset.emoji;
+    if (tempCount[e] && (marked[e] || 0) < tempCount[e]) {
+      cell.classList.add("used");
+      marked[e] = (marked[e] || 0) + 1;
+    }
+  });
+
+  for (let i = 0; i < slotCount; i++) {
+    const slot = document.createElement("div");
+    slot.className = "slot";
+    slot.id = `slot-${i}`;
+
+    if (slots[i]) {
+      slot.textContent = slots[i];
+      const btn = document.createElement("button");
+      btn.className = "remove-btn";
+      btn.textContent = "✕";
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        slots[i] = null;
+        buildSlots();
+        updateValidateBtn();
+      });
+      slot.appendChild(btn);
+    }
+
+    slot.addEventListener("dragover", (e) => { e.preventDefault(); slot.classList.add("drag-over"); });
+    slot.addEventListener("dragleave", () => slot.classList.remove("drag-over"));
+    slot.addEventListener("drop", (e) => {
+      e.preventDefault();
+      slot.classList.remove("drag-over");
+      if (draggedEmoji && !gameOver) {
+        if (draggedFrom !== "grid") slots[draggedFrom] = null;
+        slots[i] = draggedEmoji;
+        buildSlots();
+        updateValidateBtn();
+      }
+    });
+
+    slot.draggable = !!slots[i];
+    slot.addEventListener("dragstart", () => {
+      if (!slots[i]) return;
+      draggedEmoji = slots[i];
+      draggedFrom = i;
+    });
+
+    container.appendChild(slot);
+  }
+}
+
+function updateLives() {
+  document.getElementById("lives").textContent =
+    "❤️".repeat(livesLeft) + "🖤".repeat(4 - livesLeft);
+}
+
+function updateValidateBtn() {
+  document.getElementById("validateBtn").disabled = slots.includes(null) || gameOver;
+}
+
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx;
+function getCtx() { if (!audioCtx) audioCtx = new AudioCtx(); return audioCtx; }
+function playTone(freq, type, duration, vol=0.3) {
+  const ctx = getCtx();
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
+  o.connect(g); g.connect(ctx.destination);
+  o.type = type; o.frequency.setValueAtTime(freq, ctx.currentTime);
+  g.gain.setValueAtTime(vol, ctx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+  o.start(); o.stop(ctx.currentTime + duration);
+}
+function soundCorrect() { playTone(660,"sine",0.2); }
+function soundWrong()   { playTone(180,"sawtooth",0.3); }
+function soundWin()     { [523,659,784,1047].forEach((f,i) => setTimeout(()=>playTone(f,"sine",0.3),i*120)); }
+function soundLose()    { playTone(150,"sawtooth",0.8,0.4); }
+
+function spawnConfetti() {
+  const colors = ["#e94560","#4caf50","#ffd700","#00bcd4","#ff9800"];
+  for (let i = 0; i < 80; i++) {
+    const el = document.createElement("div");
+    el.className = "confetti-piece";
+    el.style.left = Math.random() * 100 + "vw";
+    el.style.background = colors[Math.floor(Math.random()*colors.length)];
+    el.style.animationDuration = (1.5 + Math.random() * 2) + "s";
+    el.style.animationDelay = (Math.random() * 0.5) + "s";
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 4000);
+  }
+}
+
+function validate() {
+  if (gameOver) return;
+  document.getElementById("message").textContent = "";
+
+  const solution = getCurrentPuzzle().solution;
+  const playerSet = [...slots].sort().join("|");
+  const solutionSet = [...solution].sort().join("|");
+  const won = playerSet === solutionSet;
+
+  slots.forEach((emoji, i) => {
+    const slot = document.getElementById(`slot-${i}`);
+    slot.classList.remove("correct","wrong","shake");
+    setTimeout(() => {
+      if (solution.includes(emoji)) { slot.classList.add("correct"); soundCorrect(); }
+      else                          { slot.classList.add("wrong");   soundWrong(); }
+    }, i * 300);
+  });
+
+  setTimeout(() => {
+    if (won) {
+      score++;
+      soundWin();
+      spawnConfetti();
+      gameOver = true;
+      setTimeout(() => showWinPanel(), 900);
+    } else {
+      livesLeft--;
+      updateLives();
+      slots.forEach((_, i) => {
+        const slot = document.getElementById(`slot-${i}`);
+        setTimeout(() => slot.classList.add("shake"), i * 100);
+      });
+      if (livesLeft <= 0) {
+        soundLose();
+        gameOver = true;
+        setTimeout(() => showLosePanel(), 900);
+      } else {
+        document.getElementById("message").textContent =
+          `❌ Raté ! Il te reste ${livesLeft} essai${livesLeft > 1 ? "s" : ""}`;
+        setTimeout(() => {
+          slots = new Array(getCurrentPuzzle().solution.length).fill(null);
+          buildSlots();
+          updateValidateBtn();
+        }, 1200);
+      }
+    }
+  }, slots.length * 300 + 300);
+}
+
+function showWinPanel() {
+  const puzzle = getCurrentPuzzle();
+  document.getElementById("winEmoji").textContent = puzzle.target;
+  document.getElementById("winTitle").textContent = `Combo réussi !`;
+  document.getElementById("winScore").textContent = `Score : ${score} point${score > 1 ? "s" : ""}`;
+  document.getElementById("winPanel").classList.add("show");
+}
+
+function showLosePanel() {
+  document.getElementById("loseScore").textContent =
+    `Score final : ${score} point${score > 1 ? "s" : ""}`;
+  document.getElementById("losePanel").classList.add("show");
+}
+
+function nextPuzzle() {
+  document.getElementById("winPanel").classList.remove("show");
+  currentPuzzleIndex++;
+  if (currentPuzzleIndex >= PUZZLES.length) {
+    document.getElementById("winTitle").textContent = "🏆 Tu as tout terminé !";
+    document.getElementById("winScore").textContent = `Score total : ${score} / ${PUZZLES.length}`;
+    document.getElementById("continueBtn").textContent = "Recommencer";
+    document.getElementById("continueBtn").onclick = resetGame;
+    document.getElementById("winPanel").classList.add("show");
+    return;
+  }
+  livesLeft = 4;
+  gameOver = false;
+  document.getElementById("message").textContent = "";
+  updateLives();
+  loadPuzzle();
+}
+
+function resetGame() {
+  currentPuzzleIndex = 0;
+  score = 0;
+  livesLeft = 4;
+  gameOver = false;
+  document.getElementById("winPanel").classList.remove("show");
+  document.getElementById("losePanel").classList.remove("show");
+  document.getElementById("continueBtn").textContent = "Continuer ▶";
+  document.getElementById("continueBtn").onclick = nextPuzzle;
+  document.getElementById("message").textContent = "";
+  updateLives();
+  loadPuzzle();
+}
+
+function loadPuzzle() {
+  const puzzle = getCurrentPuzzle();
+  document.getElementById("targetEmoji").textContent = puzzle.target;
+  document.getElementById("hintBox").textContent = `Indice : ${puzzle.hint}`;
+  slots = new Array(puzzle.solution.length).fill(null);
+  buildGrid();
+  buildSlots();
+  updateValidateBtn();
+}
+
+document.getElementById("validateBtn").addEventListener("click", validate);
+document.getElementById("continueBtn").addEventListener("click", nextPuzzle);
+document.getElementById("restartBtn").addEventListener("click", resetGame);
+</script>
+</body>
+</html>
