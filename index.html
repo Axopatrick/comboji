@@ -321,6 +321,7 @@
       <div class="panel-emoji" id="winEmoji"></div>
       <div class="panel-title" id="winTitle"></div>
       <div class="panel-score" id="winScore"></div>
+	  <button class="panel-btn" id="shareBtn" style="display:none; background:#4caf50;">Partager 🔗</button>
       <button class="panel-btn" id="continueBtn">Continuer ▶</button>
     </div>
   </div>
@@ -556,6 +557,7 @@ function spawnConfetti() {
 
 function validate() {
   if (gameOver) return;
+  document.getElementById("validateBtn").disabled = true;
   document.getElementById("message").textContent = "";
 
   const solution = getCurrentPuzzle().solution;
@@ -656,6 +658,7 @@ function nextPuzzle() {
     document.getElementById("winEmoji").textContent = "🏆"; 
     document.getElementById("winTitle").textContent = "Tu as réussi tous les combos !";
     document.getElementById("winScore").textContent = `Score total : ${score} / ${PUZZLES.length}`;
+	document.getElementById("shareBtn").style.display = "block";
     document.getElementById("continueBtn").textContent = "Recommencer";
         document.getElementById("winPanel").classList.add("show");
     return;
@@ -668,11 +671,14 @@ function nextPuzzle() {
 }
 
 function resetGame() {
+  PUZZLES = shuffleBySize(PUZZLES);
   currentPuzzleIndex = 0;
   score = 0;
   livesLeft = 4;
   gameOver = false;
   document.getElementById("winPanel").classList.remove("show");
+  document.getElementById("shareBtn").style.display = "none";
+  document.getElementById("continueBtn").textContent = "Continuer ▶";
   document.getElementById("losePanel").classList.remove("show");
   document.getElementById("message").textContent = "";
   updateLives();
@@ -698,6 +704,17 @@ document.getElementById("continueBtn").addEventListener("click", () => {
   }
 });
 document.getElementById("restartBtn").addEventListener("click", resetGame);
+
+document.getElementById("shareBtn").addEventListener("click", () => {
+  const text = `🏆 J'ai terminé Comboji avec ${score}/${PUZZLES.length} combos réussis !\nEssaie de faire mieux 👉 https://axopatrick.github.io/comboji/`;
+  if (navigator.share) {
+    navigator.share({ text });
+  } else {
+    navigator.clipboard.writeText(text);
+    alert("Texte copié dans le presse-papier !");
+  }
+});
+
 </script>
 </body>
 </html>
