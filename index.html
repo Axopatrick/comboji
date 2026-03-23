@@ -335,6 +335,16 @@
       <div class="panel-title" id="winTitle"></div>
       <div class="panel-score" id="winScore"></div>
       <button class="panel-btn" id="shareBtn" style="display:none; background:#4caf50;"></button>
+     
+ <!-- ☕ KOFI — visible uniquement à la fin -->
+    <div id="kofiBtn" style="display:none; margin-top: 4px;">
+      <script type='text/javascript' src='https://storage.ko-fi.com/cdn/widget/Widget_2.js'></script>
+      <script type='text/javascript'>
+        kofiwidget2.init('☕ Soutenir Comboji', '#e94560', 'B0B21WJ8IF');
+        kofiwidget2.draw();
+      </script>
+    </div>
+     
       <button class="panel-btn" id="continueBtn"></button>
     </div>
   </div>
@@ -795,6 +805,7 @@ function nextPuzzle() {
     document.getElementById("winTitle").textContent = T[LANG].allDone;
     document.getElementById("winScore").textContent = T[LANG].finalScore(score, PUZZLES.length);
     document.getElementById("shareBtn").style.display = "block";
+    document.getElementById("kofiBtn").style.display = "block";
     document.getElementById("continueBtn").textContent = T[LANG].restart;
     document.getElementById("winPanel").classList.add("show");
     return;
@@ -815,6 +826,7 @@ function resetGame() {
   gameOver = false;
   document.getElementById("winPanel").classList.remove("show");
   document.getElementById("shareBtn").style.display = "none";
+  document.getElementById("kofiBtn").style.display = "none";
   document.getElementById("continueBtn").textContent = T[LANG].continue;
   document.getElementById("losePanel").classList.remove("show");
   document.getElementById("message").textContent = "";
