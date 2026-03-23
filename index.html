@@ -363,38 +363,80 @@
 </div>
 
 <script>
-let PUZZLES = [
-    { target:"🦋", hint:"Mue",         solution:["🐛","⏳"] },
-  { target:"🌈", hint:"Réfraction",  solution:["☀️","🌧️"] },
-  { target:"🎠", hint:"Manège",      solution:["🐴","🎡"] },
-  { target:"🍯", hint:"Bzzz",        solution:["🐝","🌺"] },
-  { target:"🛟", hint:"Insubmersible",   solution:["🧊","🛳️"] },
-  { target:"🕺", hint:"Disco",        solution:["🌡️","🪩"] },
-    { target:"🌊", hint:"Hokusai",     solution:["🖌️","⛩️"] },
-  { target:"🧞‍♂️", hint:"Souhait",     solution:["🫖","👋"] },
-  { target:"🦈", hint:"Jaws",     solution:["🏊‍♀️","🩸"] },
-  { target:"🐺", hint:"Garou",     solution:["🌕","🧍‍♂️"] },
-  { target:"🗿", hint:"Pâques",     solution:["🏝️","🥚","🍫" ] },
-    { target:"🚀", hint:"2001",        solution:["🐒","🦴","⬛"] },
-  { target:"⚡", hint:"Paratonnerre",    solution:["🗝️","☁️","🪁"] },
-  { target:"🧟", hint:"Romero",      solution:["🪦","🌙","🧠"] },
-  { target:"🍿", hint:"Hollywood",   solution:["🌽","🔥","🎬"] },
-  { target:"🐉", hint:"Mythique",    solution:["🦎","🔥","🪽"] },
-  { target:"⛄", hint:"Hiver",       solution:["🎩","🥕","🌨️"] },
-   { target:"🍎", hint:"Défendu",     solution:["🐍","🌳","👫"] },
-  { target:"🧛", hint:"Vlad",     solution:["🦇","🩸","⚰️"] },
-  { target:"🤡", hint:"Caniveau",  solution:["🔪","⛵","🎈"] },
-  { target:"🦕", hint:"Ambre",       solution:["🏝️","🧬","🦟","🚙"] },
-  { target:"🧙‍♀️", hint:"Salem",   solution:["🐈‍⬛","🔮","🧹","🫚"] },
-   { target:"🧜", hint:"Chimère",     solution:["👩","🐟","🌊","🪸"] },
-  { target:"🥷", hint:"Cowabunga",   solution:["🐢","🧪","🍕","🗽"] },
-  { target:"🕶️", hint:"Neo",   solution:["💻","🐇","💊","🥋"] },
-  { target:"👂", hint:"Vincent",     solution:["🎨","🌻","🔪","🖌"] },
-  { target:"🧝‍♀️", hint:"Légende",  solution:["🗡️","🛡️","🧚","🏰"] },
-  { target:"🧙‍♂️", hint:"Placard",     solution:["⚡","🦉","🪄","📚"] },
-  { target:"🍕", hint:"Margherita",      solution:["🍅","🧀","👨‍🍳","🤌"] },
-  { target:"💎", hint:"Heisenberg",  solution:["🚐","⚗️","🌵","🥽"] },
-];
+
+// ============================================================
+// 📚 CATALOGUE — AJOUTE TES NOUVELLES ÉNIGMES ICI !
+// Pour ajouter une énigme :
+//   { target:"🎯", hint:"Indice", solution:["🔵","🎳"] }
+// Mets-la dans taille2, taille3 ou taille4 selon le nombre d'emojis
+// ============================================================
+
+const CATALOGUE = {
+
+  taille2: [
+    { target:"🦋", hint:"Mue",            solution:["🐛","⏳"] },
+    { target:"🌈", hint:"Réfraction",     solution:["☀️","🌧️"] },
+    { target:"🎠", hint:"Manège",         solution:["🐴","🎡"] },
+    { target:"🍯", hint:"Bzzz",           solution:["🐝","🌺"] },
+    { target:"🛟", hint:"Insubmersible",  solution:["🧊","🛳️"] },
+    { target:"🕺", hint:"Disco",          solution:["🌡️","🪩"] },
+    { target:"🌊", hint:"Hokusai",        solution:["🖌️","⛩️"] },
+    { target:"🧞‍♂️", hint:"Souhait",     solution:["🫖","👋"] },
+    { target:"🦈", hint:"Jaws",           solution:["🏊‍♀️","🩸"] },
+    { target:"🐺", hint:"Garou",          solution:["🌕","🧍‍♂️"] },
+    { target:"👁️", hint:"Mordor",        solution:["🌋","💍"] },
+    // ➕ Ajoute tes énigmes à 2 emojis ici
+  ],
+
+  taille3: [
+    { target:"🗿", hint:"Pâques",         solution:["🏝️","🥚","🍫"] },
+    { target:"🧟", hint:"Romero",         solution:["🪦","🌙","🧠"] },
+    { target:"🍿", hint:"Hollywood",      solution:["🌽","🔥","🎬"] },
+    { target:"🐉", hint:"Mythique",       solution:["🦎","🔥","🪽"] },
+    { target:"⛄",  hint:"Hiver",          solution:["🎩","🥕","🌨️"] },
+    { target:"🍎", hint:"Défendu",        solution:["🐍","🌳","👫"] },
+    { target:"🧛", hint:"Vlad",           solution:["🦇","🩸","⚰️"] },
+    { target:"🤡", hint:"Caniveau",       solution:["🔪","⛵","🎈"] },
+    { target:"⚡",  hint:"Paratonnerre",   solution:["🗝️","☁️","🪁"] },
+    { target:"🧜", hint:"Chimère",        solution:["👩","🐟","🌊"] },
+    // ➕ Ajoute tes énigmes à 3 emojis ici
+  ],
+
+  taille4: [
+    { target:"🚀",  hint:"2001",           solution:["🐒","🦴","⬛","🌌"] },
+    { target:"🦕",  hint:"Ambre",          solution:["🏝️","🧬","🦟","🚙"] },
+    { target:"🧙‍♀️", hint:"Salem",       solution:["🐈‍⬛","🔮","🧹","🫚"] },
+    { target:"🥷",  hint:"Cowabunga",      solution:["🐢","🧪","🍕","🗽"] },
+    { target:"🕶️", hint:"Neo",            solution:["💻","🐇","💊","🥋"] },
+    { target:"👂",  hint:"Vincent",        solution:["🎨","🌻","🔪","🖌"] },
+    { target:"🧝‍♀️", hint:"Légende",     solution:["🗡️","🛡️","🧚","🏰"] },
+    { target:"🧙‍♂️", hint:"Placard",     solution:["⚡","🦉","🪄","📚"] },
+    { target:"🍕",  hint:"Margherita",     solution:["🍅","🧀","👨‍🍳","🤌"] },
+    { target:"💎",  hint:"Heisenberg",     solution:["🚐","⚗️","🌵","🥽"] },
+    // ➕ Ajoute tes énigmes à 4 emojis ici
+  ]
+
+};
+
+// ============================================================
+// 🎲 PIOCHE — ne pas modifier
+// ============================================================
+
+function piocher(liste, n) {
+  // Si pas assez d'énigmes dans la liste, on prend tout ce qu'il y a
+  const melange = [...liste].sort(() => Math.random() - 0.5);
+  return melange.slice(0, Math.min(n, liste.length));
+}
+
+function genererPartie() {
+  return [
+    ...piocher(CATALOGUE.taille2, 10),
+    ...piocher(CATALOGUE.taille3, 10),
+    ...piocher(CATALOGUE.taille4, 10),
+  ];
+}
+
+// ============================================================
 
 const DISTRACTORS = [
   "🌍","🎸","🏔️","🍦","🐖","🎭","🥑","🦊","🏖️","🎪",
@@ -403,9 +445,10 @@ const DISTRACTORS = [
   "🎻","🦅","🍓","🐸","🍉","🛝","🎡","🧁","🧵","🌵",
   "🤖","👄","💣","👠","🎱","🎺","🐞","🍔","🏍️","📺",
   "🔫","🏀","🧸","🍩","🧿","💾","📼","☂️","🔭","📢",
-  "👻​","🪰","​🐥​","​​🍙​","​​​🚁​","​​​​🕹️​","📼","​​​​​🛒​","​​​​​​​​​​​​🛹​​","​​​​​​​⛽​"
+  "👻​","🪰","​🐥​","​​🍙​","​​​🚁​","​​​​🕹️​","📼","​​​​​🛒​","​​​​​🪃​","​​​​​​​⛽​"
 ];
 
+let PUZZLES = [];
 let currentPuzzleIndex = 0;
 let slots = [];
 let livesLeft = 4;
@@ -422,15 +465,8 @@ function shuffle(array) {
   return array;
 }
 
-function shuffleBySize(puzzles) {
-  const twoEmojis   = puzzles.filter(p => p.solution.length === 2);
-  const threeEmojis = puzzles.filter(p => p.solution.length === 3);
-  const fourEmojis  = puzzles.filter(p => p.solution.length === 4);
-  return [...shuffle(twoEmojis), ...shuffle(threeEmojis), ...shuffle(fourEmojis)];
-}
-
 function startGame() {
-  PUZZLES = shuffleBySize(PUZZLES);
+  PUZZLES = genererPartie();
   currentPuzzleIndex = 0;
   document.getElementById("titleScreen").style.display = "none";
   document.getElementById("game").style.display = "contents";
@@ -675,7 +711,7 @@ function showLosePanel() {
 function showLevelPanel(levelNum) {
   const subtitles = {
     2: "Les combos se corsent...",
-    3: "Mode expert ! 🔥"
+    3: "Mode expert activé ​​🚨​"
   };
   document.getElementById("levelTitle").textContent = `Niveau ${levelNum} débloqué !`;
   document.getElementById("levelSubtitle").textContent = subtitles[levelNum] || "";
@@ -690,7 +726,7 @@ function nextPuzzle() {
   if (currentPuzzleIndex === 10 || currentPuzzleIndex === 20) {
     const levelNum = currentPuzzleIndex === 10 ? 2 : 3;
     showLevelPanel(levelNum);
-    return; // on s'arrête ici, le bouton du panneau reprendra la suite
+    return;
   }
 
   if (currentPuzzleIndex >= PUZZLES.length) {
@@ -712,7 +748,7 @@ function nextPuzzle() {
 }
 
 function resetGame() {
-  PUZZLES = shuffleBySize(PUZZLES);
+  PUZZLES = genererPartie(); // ← nouvelle pioche à chaque restart !
   currentPuzzleIndex = 0;
   score = 0;
   livesLeft = 4;
@@ -748,7 +784,6 @@ document.getElementById("continueBtn").addEventListener("click", () => {
 
 document.getElementById("restartBtn").addEventListener("click", resetGame);
 
-// ===== BOUTON CONTINUER DU PANNEAU NIVEAU =====
 document.getElementById("levelContinueBtn").addEventListener("click", () => {
   document.getElementById("levelPanel").classList.remove("show");
   livesLeft = 4;
