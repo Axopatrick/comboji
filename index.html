@@ -231,9 +231,8 @@
   margin-bottom: 0;
   height: auto;
   filter: drop-shadow(4px 4px 0px rgba(0, 0, 0, 0.5));
-
   }
-    #gameLogo {
+  #gameLogo {
   width: 280px;
   height: auto;
   margin-top: 0px;
@@ -274,6 +273,21 @@
   #playBtn:hover { transform: scale(1.08); box-shadow: 0 6px 32px rgba(254,108,219,0.6); }
 
   #game { display: none; }
+
+  /* ===== PANNEAU NIVEAU ===== */
+  .level-badge {
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #b21971, #ee48a5);
+    color: white;
+  }
+  .level-badge.level3 {
+    background: linear-gradient(135deg, #e94560, #ff6b00);
+  }
 </style>
 </head>
 <body>
@@ -321,7 +335,7 @@
       <div class="panel-emoji" id="winEmoji"></div>
       <div class="panel-title" id="winTitle"></div>
       <div class="panel-score" id="winScore"></div>
-	  <button class="panel-btn" id="shareBtn" style="display:none; background:#4caf50;">Partager 🔗</button>
+      <button class="panel-btn" id="shareBtn" style="display:none; background:#4caf50;">Partager 🔗</button>
       <button class="panel-btn" id="continueBtn">Continuer ▶</button>
     </div>
   </div>
@@ -335,6 +349,17 @@
       <button class="panel-btn" id="restartBtn">Recommencer</button>
     </div>
   </div>
+
+  <!-- ===== PANNEAU NIVEAU DÉBLOQUÉ ===== -->
+  <div class="panel-overlay" id="levelPanel">
+    <div class="panel">
+      <div class="panel-emoji">🔓</div>
+      <div class="panel-title" id="levelTitle">Niveau 2 débloqué !</div>
+      <div class="panel-score" id="levelSubtitle"></div>
+      <button class="panel-btn" id="levelContinueBtn">Continuer ▶</button>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -370,6 +395,7 @@ let PUZZLES = [
   { target:"🍕", hint:"Margherita",      solution:["🍅","🧀","👨‍🍳","🤌"] },
   { target:"💎", hint:"Heisenberg",  solution:["🚐","⚗️","🌵","🥽"] },
 ];
+
 const DISTRACTORS = [
   "🌍","🎸","🏔️","🍦","🐖","🎭","🥑","🦊","🏖️","🎪",
   "🚂","🍄","🦁","🎯","🌙","💫","🐙","🎲","🏰","🌊",
@@ -403,8 +429,8 @@ function shuffleBySize(puzzles) {
 }
 
 function startGame() {
-  PUZZLES = shuffleBySize(PUZZLES); // ← on réordonne au lancement
-  currentPuzzleIndex = 0;           // ← on repart du début
+  PUZZLES = shuffleBySize(PUZZLES);
+  currentPuzzleIndex = 0;
   document.getElementById("titleScreen").style.display = "none";
   document.getElementById("game").style.display = "contents";
   loadPuzzle();
@@ -417,10 +443,10 @@ function buildGrid() {
   const puzzle = getCurrentPuzzle();
   const solution = puzzle.solution;
   const needed = 16 - solution.length;
-const shuffled = [...DISTRACTORS]
-  .filter(d => !solution.includes(d)) // ← on exclut ceux déjà dans la solution
-  .sort(() => Math.random() - 0.5);
-const distractors = shuffled.slice(0, needed);
+  const shuffled = [...DISTRACTORS]
+    .filter(d => !solution.includes(d))
+    .sort(() => Math.random() - 0.5);
+  const distractors = shuffled.slice(0, needed);
   const allEmojis = [...solution, ...distractors].sort(() => Math.random() - 0.5);
 
   const grid = document.getElementById("grid");
@@ -615,32 +641,25 @@ function showWinPanel() {
   document.getElementById("winPanel").classList.add("show");
 }
 
- function soundVictory() {
+function soundVictory() {
   const ctx = new AudioContext();
-  
-  // La mélodie : [fréquence, moment de départ, durée]
   const melody = [
-    [523, 0.0, 0.15],   // Do
-    [659, 0.15, 0.15],  // Mi
-    [784, 0.30, 0.15],  // Sol
-    [1046, 0.45, 0.4],  // Do (octave sup)
-    [880, 0.85, 0.15],  // La
-    [1046, 1.0, 0.6],   // Do final (long)
+    [523, 0.0, 0.15],
+    [659, 0.15, 0.15],
+    [784, 0.30, 0.15],
+    [1046, 0.45, 0.4],
+    [880, 0.85, 0.15],
+    [1046, 1.0, 0.6],
   ];
-
   melody.forEach(([freq, start, duration]) => {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    
     osc.type = "sine";
     osc.frequency.value = freq;
-    
     gain.gain.setValueAtTime(0.4, ctx.currentTime + start);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + duration);
-    
     osc.connect(gain);
     gain.connect(ctx.destination);
-    
     osc.start(ctx.currentTime + start);
     osc.stop(ctx.currentTime + start + duration + 0.1);
   });
@@ -652,19 +671,38 @@ function showLosePanel() {
   document.getElementById("losePanel").classList.add("show");
 }
 
+function showLevelPanel(levelNum) {
+  const subtitles = {
+    2: "Les combos se corsent...",
+    3: "Mode expert ! 🔥"
+  };
+  document.getElementById("levelTitle").textContent = `Niveau ${levelNum} débloqué !`;
+  document.getElementById("levelSubtitle").textContent = subtitles[levelNum] || "";
+  document.getElementById("levelPanel").classList.add("show");
+}
+
 function nextPuzzle() {
   document.getElementById("winPanel").classList.remove("show");
   currentPuzzleIndex++;
- if (currentPuzzleIndex >= PUZZLES.length) {
-  soundVictory();
-    document.getElementById("winEmoji").textContent = "🏆"; 
+
+  // ===== PANNEAUX NIVEAU =====
+  if (currentPuzzleIndex === 10 || currentPuzzleIndex === 20) {
+    const levelNum = currentPuzzleIndex === 10 ? 2 : 3;
+    showLevelPanel(levelNum);
+    return; // on s'arrête ici, le bouton du panneau reprendra la suite
+  }
+
+  if (currentPuzzleIndex >= PUZZLES.length) {
+    soundVictory();
+    document.getElementById("winEmoji").textContent = "🏆";
     document.getElementById("winTitle").textContent = "Tu as réussi tous les combos !";
     document.getElementById("winScore").textContent = `Score total : ${score} / ${PUZZLES.length}`;
-	document.getElementById("shareBtn").style.display = "block";
+    document.getElementById("shareBtn").style.display = "block";
     document.getElementById("continueBtn").textContent = "Recommencer";
-        document.getElementById("winPanel").classList.add("show");
+    document.getElementById("winPanel").classList.add("show");
     return;
   }
+
   livesLeft = 4;
   gameOver = false;
   document.getElementById("message").textContent = "";
@@ -698,6 +736,7 @@ function loadPuzzle() {
 }
 
 document.getElementById("validateBtn").addEventListener("click", validate);
+
 document.getElementById("continueBtn").addEventListener("click", () => {
   if (currentPuzzleIndex >= PUZZLES.length) {
     resetGame();
@@ -705,7 +744,18 @@ document.getElementById("continueBtn").addEventListener("click", () => {
     nextPuzzle();
   }
 });
+
 document.getElementById("restartBtn").addEventListener("click", resetGame);
+
+// ===== BOUTON CONTINUER DU PANNEAU NIVEAU =====
+document.getElementById("levelContinueBtn").addEventListener("click", () => {
+  document.getElementById("levelPanel").classList.remove("show");
+  livesLeft = 4;
+  gameOver = false;
+  document.getElementById("message").textContent = "";
+  updateLives();
+  loadPuzzle();
+});
 
 document.getElementById("shareBtn").addEventListener("click", () => {
   const text = `🏆 J'ai terminé Comboji avec ${score}/${PUZZLES.length} combos réussis !\nSi tu veux essayer, c'est par là 👉 https://axopatrick.github.io/comboji/`;
@@ -716,7 +766,6 @@ document.getElementById("shareBtn").addEventListener("click", () => {
     alert("Texte copié dans le presse-papier !");
   }
 });
-
 </script>
 </body>
 </html>
