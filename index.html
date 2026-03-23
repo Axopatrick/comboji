@@ -706,7 +706,7 @@ document.getElementById("continueBtn").addEventListener("click", () => {
 document.getElementById("restartBtn").addEventListener("click", resetGame);
 
 document.getElementById("shareBtn").addEventListener("click", () => {
-  const text = `🏆 J'ai terminé Comboji avec ${score}/${PUZZLES.length} combos réussis !\nEssaie de faire mieux 👉 https://axopatrick.github.io/comboji/`;
+  const text = `🏆 J'ai terminé Comboji avec ${score}/${PUZZLES.length} combos réussis !\nSi tu veux essayer, c'est par là 👉 https://axopatrick.github.io/comboji/`;
   if (navigator.share) {
     navigator.share({ text });
   } else {
