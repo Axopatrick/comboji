@@ -226,6 +226,22 @@
   margin-bottom: -50px;
   filter: drop-shadow(4px 4px 0px rgba(0, 0, 0, 0.5));
   }
+
+ #creditText {
+  color: #aaaaaa;
+  font-size: 14px;
+  margin: 10px 0;
+}
+
+#creditText a {
+  color: #aaaaaa;
+  text-decoration: underline;
+}
+
+#creditText a:hover {
+  color: #ffffff;
+}
+
   #playBtn {
     font-size: 1.2rem;
     padding: 16px 52px;
@@ -250,6 +266,12 @@
 <div id="titleScreen">
   <div id="titlePuzzle">🧩</div>
   <img src="logocomboji.png" alt="Comboji" id="titleName">
+ <p id="creditText">
+  Un jeu d'association par 
+  <a href="https://www.instagram.com/TONCOMPTE" target="_blank">
+    <strong>Patrick Baud</strong>
+  </a>
+</p>
   <button id="playBtn" onclick="startGame()">▶ JOUER</button>
 </div>
 
