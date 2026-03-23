@@ -396,10 +396,10 @@ function shuffle(array) {
 }
 
 function shuffleBySize(puzzles) {
-  const twoEmojis = puzzles.filter(p => p.solution.length === 2);
+  const twoEmojis   = puzzles.filter(p => p.solution.length === 2);
   const threeEmojis = puzzles.filter(p => p.solution.length === 3);
   const fourEmojis  = puzzles.filter(p => p.solution.length === 4);
-  return [...shuffle(twoEmojis), ...shuffle(threeEmojis)];
+  return [...shuffle(twoEmojis), ...shuffle(threeEmojis), ...shuffle(fourEmojis)];
 }
 
 function startGame() {
