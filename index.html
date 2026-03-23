@@ -188,26 +188,23 @@
     100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
   }
 
-  /* ===== ÉCRAN TITRE ===== */
+  .mini-tuto {
+    font-size: 3rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: floating 3s ease-in-out infinite;
+  }
+  .mini-tuto .plus {
+    font-size: 1.5rem;
+    opacity: 0.7;
+  }
+  @keyframes floating {
+    0%   { transform: translateY(0px); }
+    50%  { transform: translateY(-8px); }
+    100% { transform: translateY(0px); }
+  }
 
-.mini-tuto {
-  font-size: 3rem;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  animation: floating 3s ease-in-out infinite;
-}
-
-.mini-tuto .plus {
-  font-size: 1.5rem;
-  opacity: 0.7;
-}
- @keyframes floating {
-  0%   { transform: translateY(0px); }
-  50%  { transform: translateY(-8px); }
-  100% { transform: translateY(0px); }
-}
- 
   #titleScreen {
     display: flex;
     flex-direction: column;
@@ -221,43 +218,34 @@
     z-index: 999;
     gap: 0;
   }
-  @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-18px); }
-  }
   #titleName {
-  width: 380px;
-  margin-top: 15px;
-  margin-bottom: 0;
-  height: auto;
-  filter: drop-shadow(4px 4px 0px rgba(0, 0, 0, 0.5));
+    width: 380px;
+    margin-top: 15px;
+    margin-bottom: 0;
+    height: auto;
+    filter: drop-shadow(4px 4px 0px rgba(0,0,0,0.5));
   }
   #gameLogo {
-  width: 280px;
-  height: auto;
-  margin-top: 0px;
-  margin-bottom: -10px;
-  filter: drop-shadow(4px 4px 0px rgba(0, 0, 0, 0.5));
+    width: 280px;
+    height: auto;
+    margin-top: 0px;
+    margin-bottom: -10px;
+    filter: drop-shadow(4px 4px 0px rgba(0,0,0,0.5));
   }
+  #creditText {
+    color: #aaaaaa;
+    font-size: 14px;
+    margin: 10px 0;
+    margin-top: 10px;
+    margin-bottom: 25px;
+  }
+  #creditText a {
+    color: #aaaaaa;
+    text-decoration: underline;
+  }
+  #creditText a:hover { color: #ffffff; }
 
- #creditText {
-  color: #aaaaaa;
-  font-size: 14px;
-  margin: 10px 0;
-  margin-top: 10px;
-   margin-bottom: 25px;
-}
-
-#creditText a {
-  color: #aaaaaa;
-  text-decoration: underline;
-}
-
-#creditText a:hover {
-  color: #ffffff;
-}
-
- #playBtn {
+  #playBtn {
     font-size: 1.2rem;
     padding: 16px 52px;
     border-radius: 50px;
@@ -274,7 +262,6 @@
 
   #game { display: none; }
 
-  /* ===== PANNEAU NIVEAU ===== */
   .level-badge {
     font-size: 0.8rem;
     font-weight: 800;
@@ -295,20 +282,20 @@
 <!-- ===== ÉCRAN TITRE ===== -->
 <div id="titleScreen">
   <div class="mini-tuto">
-  <span>🐝</span>
-  <span class="plus">+</span>
-  <span>🌺</span>
-  <span class="plus">=</span>
-  <span>🍯</span>
-</div>
+    <span>🐝</span>
+    <span class="plus">+</span>
+    <span>🌺</span>
+    <span class="plus">=</span>
+    <span>🍯</span>
+  </div>
   <img src="logocomboji.png" alt="Comboji" id="titleName">
- <p id="creditText">
-  Un jeu d'association par 
-  <a href="https://www.instagram.com/patrick_baud" target="_blank">
-    <strong>Patrick Baud</strong>
-  </a>
-</p>
-  <button id="playBtn" onclick="startGame()">▶ JOUER</button>
+  <p id="creditText">
+    <span id="creditBy"></span>
+    <a href="https://www.instagram.com/patrick_baud" target="_blank">
+      <strong>Patrick Baud</strong>
+    </a>
+  </p>
+  <button id="playBtn" onclick="startGame()"></button>
 </div>
 
 <!-- ===== JEU ===== -->
@@ -316,7 +303,7 @@
   <img src="logocomboji.png" alt="Comboji" id="gameLogo">
 
   <div class="target-zone">
-    <div class="target-label"><strong>Combine les emojis pour créer celui-ci</strong></div>
+    <div class="target-label"><strong id="targetLabel"></strong></div>
     <div class="target-emoji" id="targetEmoji"></div>
     <div class="hint-box" id="hintBox"></div>
   </div>
@@ -324,7 +311,7 @@
   <div class="grid" id="grid"></div>
   <div class="slots" id="slots"></div>
 
-  <button class="validate-btn" id="validateBtn" disabled>VALIDER</button>
+  <button class="validate-btn" id="validateBtn" disabled></button>
 
   <div class="lives" id="lives"></div>
   <div class="message" id="message"></div>
@@ -335,8 +322,8 @@
       <div class="panel-emoji" id="winEmoji"></div>
       <div class="panel-title" id="winTitle"></div>
       <div class="panel-score" id="winScore"></div>
-      <button class="panel-btn" id="shareBtn" style="display:none; background:#4caf50;">Partager 🔗</button>
-      <button class="panel-btn" id="continueBtn">Continuer ▶</button>
+      <button class="panel-btn" id="shareBtn" style="display:none; background:#4caf50;"></button>
+      <button class="panel-btn" id="continueBtn"></button>
     </div>
   </div>
 
@@ -344,19 +331,19 @@
   <div class="panel-overlay" id="losePanel">
     <div class="panel">
       <div class="panel-emoji">💀</div>
-      <div class="panel-title">Perdu !</div>
+      <div class="panel-title" id="losePanelTitle"></div>
       <div class="panel-score" id="loseScore"></div>
-      <button class="panel-btn" id="restartBtn">Recommencer</button>
+      <button class="panel-btn" id="restartBtn"></button>
     </div>
   </div>
 
-  <!-- ===== PANNEAU NIVEAU DÉBLOQUÉ ===== -->
+  <!-- Panel niveau débloqué -->
   <div class="panel-overlay" id="levelPanel">
     <div class="panel">
       <div class="panel-emoji">🔓</div>
-      <div class="panel-title" id="levelTitle">Niveau 2 débloqué !</div>
+      <div class="panel-title" id="levelTitle"></div>
       <div class="panel-score" id="levelSubtitle"></div>
-      <button class="panel-btn" id="levelContinueBtn">Continuer ▶</button>
+      <button class="panel-btn" id="levelContinueBtn"></button>
     </div>
   </div>
 
@@ -365,55 +352,121 @@
 <script>
 
 // ============================================================
+// 🌍 DÉTECTION DE LANGUE
+// ============================================================
+
+const LANG = navigator.language.startsWith("fr") ? "fr" : "en";
+
+const T = {
+  fr: {
+    creditBy:       "Un jeu d'association par",
+    playBtn:        "▶ JOUER",
+    targetLabel:    "Combine les emojis pour créer celui-ci",
+    hint:           "Indice",
+    validate:       "VALIDER",
+    comboOk:        "Combo réussi !",
+    score:          (n) => `Score : ${n} point${n > 1 ? "s" : ""}`,
+    missed:         (n) => `❌ Raté ! Il te reste ${n} essai${n > 1 ? "s" : ""}`,
+    allDone:        "Tu as réussi tous les combos !",
+    finalScore:     (n, t) => `Score total : ${n} / ${t}`,
+    restart:        "Recommencer",
+    continue:       "Continuer ▶",
+    lost:           "Perdu !",
+    loseScore:      (n) => `Score final : ${n} point${n > 1 ? "s" : ""}`,
+    level2title:    "Niveau 2 débloqué !",
+    level3title:    "Niveau 3 débloqué !",
+    level2sub:      "Les combos se corsent...",
+    level3sub:      "Mode expert activé 🚨",
+    share:          "Partager 🔗",
+    shareText:      (n, t) => `🏆 J'ai terminé Comboji avec ${n}/${t} combos réussis !\nSi tu veux essayer, c'est par là 👉 https://axopatrick.github.io/comboji/`,
+    clipboardMsg:   "Texte copié dans le presse-papier !",
+  },
+  en: {
+    creditBy:       "A game by",
+    playBtn:        "▶ PLAY",
+    targetLabel:    "Combine the emojis to create this one",
+    hint:           "Hint",
+    validate:       "VALIDATE",
+    comboOk:        "Combo complete!",
+    score:          (n) => `Score: ${n} point${n > 1 ? "s" : ""}`,
+    missed:         (n) => `❌ Wrong! ${n} attempt${n > 1 ? "s" : ""} left`,
+    allDone:        "You completed all combos!",
+    finalScore:     (n, t) => `Final score: ${n} / ${t}`,
+    restart:        "Restart",
+    continue:       "Continue ▶",
+    lost:           "Game over!",
+    loseScore:      (n) => `Final score: ${n} point${n > 1 ? "s" : ""}`,
+    level2title:    "Level 2 unlocked!",
+    level3title:    "Level 3 unlocked!",
+    level2sub:      "Combos are getting harder...",
+    level3sub:      "Expert mode activated 🚨",
+    share:          "Share 🔗",
+    shareText:      (n, t) => `🏆 I completed Comboji with ${n}/${t} combos!\nGive it a try 👉 https://axopatrick.github.io/comboji/`,
+    clipboardMsg:   "Copied to clipboard!",
+  }
+};
+
+// Applique les textes statiques au chargement
+function applyTranslations() {
+  document.getElementById("creditBy").textContent    = T[LANG].creditBy + " ";
+  document.getElementById("playBtn").textContent     = T[LANG].playBtn;
+  document.getElementById("targetLabel").textContent = T[LANG].targetLabel;
+  document.getElementById("validateBtn").textContent = T[LANG].validate;
+  document.getElementById("continueBtn").textContent = T[LANG].continue;
+  document.getElementById("restartBtn").textContent  = T[LANG].restart;
+  document.getElementById("shareBtn").textContent    = T[LANG].share;
+  document.getElementById("losePanelTitle").textContent = T[LANG].lost;
+  document.getElementById("levelContinueBtn").textContent = T[LANG].continue;
+}
+
+// ============================================================
 // 📚 CATALOGUE — AJOUTE TES NOUVELLES ÉNIGMES ICI !
-// Pour ajouter une énigme :
-//   { target:"🎯", hint:"Indice", solution:["🔵","🎳"] }
-// Mets-la dans taille2, taille3 ou taille4 selon le nombre d'emojis
+// Chaque énigme a un hint en français ET en anglais :
+//   hint: { fr: "Indice", en: "Hint" }
 // ============================================================
 
 const CATALOGUE = {
 
   taille2: [
-    { target:"🦋", hint:"Mue",            solution:["🐛","⏳"] },
-    { target:"🌈", hint:"Réfraction",     solution:["☀️","🌧️"] },
-    { target:"🎠", hint:"Manège",         solution:["🐴","🎡"] },
-    { target:"🍯", hint:"Bzzz",           solution:["🐝","🌺"] },
-    { target:"🛟", hint:"Insubmersible",  solution:["🧊","🛳️"] },
-    { target:"🕺", hint:"Disco",          solution:["🌡️","🪩"] },
-    { target:"🌊", hint:"Hokusai",        solution:["🖌️","⛩️"] },
-    { target:"🧞‍♂️", hint:"Souhait",     solution:["🫖","👋"] },
-    { target:"🦈", hint:"Jaws",           solution:["🏊‍♀️","🩸"] },
-    { target:"🐺", hint:"Garou",          solution:["🌕","🧍‍♂️"] },
-    { target:"👁️", hint:"Mordor",        solution:["🌋","💍"] },
+    { target:"🦋", hint:{ fr:"Mue",           en:"Metamorphosis" }, solution:["🐛","⏳"] },
+    { target:"🌈", hint:{ fr:"Réfraction",    en:"Refraction"    }, solution:["☀️","🌧️"] },
+    { target:"🎠", hint:{ fr:"Manège",         en:"Carousel"      }, solution:["🐴","🎡"] },
+    { target:"🍯", hint:{ fr:"Bzzz",           en:"Bzzz"          }, solution:["🐝","🌺"] },
+    { target:"🛟", hint:{ fr:"Insubmersible",  en:"Unsinkable"    }, solution:["🧊","🛳️"] },
+    { target:"🕺", hint:{ fr:"Disco",          en:"Disco"         }, solution:["🌡️","🪩"] },
+    { target:"🌊", hint:{ fr:"Hokusai",        en:"Hokusai"       }, solution:["🖌️","⛩️"] },
+    { target:"🧞‍♂️", hint:{ fr:"Souhait",    en:"Wish"          }, solution:["🫖","👋"] },
+    { target:"🦈", hint:{ fr:"Jaws",           en:"Jaws"          }, solution:["🏊‍♀️","🩸"] },
+    { target:"🐺", hint:{ fr:"Garou",          en:"Werewolf"      }, solution:["🌕","🧍‍♂️"] },
+    { target:"👁️", hint:{ fr:"Mordor",        en:"Mordor"        }, solution:["🌋","💍"] },
     // ➕ Ajoute tes énigmes à 2 emojis ici
   ],
 
   taille3: [
-    { target:"🗿", hint:"Pâques",         solution:["🏝️","🥚","🍫"] },
-    { target:"🧟", hint:"Romero",         solution:["🪦","🌙","🧠"] },
-    { target:"🍿", hint:"Hollywood",      solution:["🌽","🔥","🎬"] },
-    { target:"🐉", hint:"Mythique",       solution:["🦎","🔥","🪽"] },
-    { target:"⛄",  hint:"Hiver",          solution:["🎩","🥕","🌨️"] },
-    { target:"🍎", hint:"Défendu",        solution:["🐍","🌳","👫"] },
-    { target:"🧛", hint:"Vlad",           solution:["🦇","🩸","⚰️"] },
-    { target:"🚀",  hint:"2001",           solution:["🐒","🦴","⬛"] },
-    { target:"🤡", hint:"Caniveau",       solution:["🔪","⛵","🎈"] },
-    { target:"⚡",  hint:"Paratonnerre",   solution:["🗝️","☁️","🪁"] },
-   
+    { target:"🗿", hint:{ fr:"Pâques",         en:"Easter"        }, solution:["🏝️","🥚","🍫"] },
+    { target:"🧟", hint:{ fr:"Romero",         en:"Romero"        }, solution:["🪦","🌙","🧠"] },
+    { target:"🍿", hint:{ fr:"Hollywood",      en:"Hollywood"     }, solution:["🌽","🔥","🎬"] },
+    { target:"🐉", hint:{ fr:"Mythique",       en:"Mythical"      }, solution:["🦎","🔥","🪽"] },
+    { target:"⛄",  hint:{ fr:"Hiver",          en:"Winter"        }, solution:["🎩","🥕","🌨️"] },
+    { target:"🍎", hint:{ fr:"Défendu",        en:"Forbidden"     }, solution:["🐍","🌳","👫"] },
+    { target:"🧛", hint:{ fr:"Vlad",           en:"Vlad"          }, solution:["🦇","🩸","⚰️"] },
+    { target:"🚀",  hint:{ fr:"2001",           en:"2001"          }, solution:["🐒","🦴","⬛"] },
+    { target:"🤡", hint:{ fr:"Caniveau",       en:"Gutter"        }, solution:["🔪","⛵","🎈"] },
+    { target:"⚡",  hint:{ fr:"Paratonnerre",   en:"Lightning rod" }, solution:["🗝️","☁️","🪁"] },
     // ➕ Ajoute tes énigmes à 3 emojis ici
   ],
 
   taille4: [
-    { target:"🧜", hint:"Chimère",        solution:["👩","🐟","🌊","​​​🪸​"] },
-    { target:"🦕",  hint:"Ambre",          solution:["🏝️","🧬","🦟","🚙"] },
-    { target:"🧙‍♀️", hint:"Salem",       solution:["🐈‍⬛","🔮","🧹","🫚"] },
-    { target:"🥷",  hint:"Cowabunga",      solution:["🐢","🧪","🍕","🗽"] },
-    { target:"🕶️", hint:"Neo",            solution:["💻","🐇","💊","🥋"] },
-    { target:"👂",  hint:"Vincent",        solution:["🎨","🌻","🔪","🖌️"] },
-    { target:"🧝‍♀️", hint:"Légende",     solution:["🗡️","🛡️","🧚","🏰"] },
-    { target:"🧙‍♂️", hint:"Placard",     solution:["⚡","🦉","🪄","📚"] },
-    { target:"🍕",  hint:"Margherita",     solution:["🍅","🧀","👨‍🍳","🤌"] },
-    { target:"💎",  hint:"Heisenberg",     solution:["🚐","⚗️","🌵","🥽"] },
+    { target:"🧜", hint:{ fr:"Chimère",        en:"Chimera"       }, solution:["👩","🐟","🌊","​​​🪸​"] },
+    { target:"🦕",  hint:{ fr:"Ambre",          en:"Amber"         }, solution:["🏝️","🧬","🦟","🚙"] },
+    { target:"🧙‍♀️", hint:{ fr:"Salem",       en:"Salem"         }, solution:["🐈‍⬛","🔮","🧹","🫚"] },
+    { target:"🥷",  hint:{ fr:"Cowabunga",      en:"Cowabunga"     }, solution:["🐢","🧪","🍕","🗽"] },
+    { target:"🕶️", hint:{ fr:"Neo",            en:"Neo"           }, solution:["💻","🐇","💊","🥋"] },
+    { target:"👂",  hint:{ fr:"Vincent",        en:"Vincent"       }, solution:["🎨","🌻","🔪","🖌️"] },
+    { target:"🧝‍♀️", hint:{ fr:"Légende",     en:"Legend"        }, solution:["🗡️","🛡️","🧚","🏰"] },
+    { target:"🧙‍♂️", hint:{ fr:"Placard",     en:"Closet"        }, solution:["⚡","🦉","🪄","📚"] },
+    { target:"🍕",  hint:{ fr:"Margherita",     en:"Margherita"    }, solution:["🍅","🧀","👨‍🍳","🤌"] },
+    { target:"💎",  hint:{ fr:"Heisenberg",     en:"Heisenberg"    }, solution:["🚐","⚗️","🌵","🥽"] },
     // ➕ Ajoute tes énigmes à 4 emojis ici
   ]
 
@@ -424,7 +477,6 @@ const CATALOGUE = {
 // ============================================================
 
 function piocher(liste, n) {
-  // Si pas assez d'énigmes dans la liste, on prend tout ce qu'il y a
   const melange = [...liste].sort(() => Math.random() - 0.5);
   return melange.slice(0, Math.min(n, liste.length));
 }
@@ -659,8 +711,7 @@ function validate() {
         gameOver = true;
         setTimeout(() => showLosePanel(), 900);
       } else {
-        document.getElementById("message").textContent =
-          `❌ Raté ! Il te reste ${livesLeft} essai${livesLeft > 1 ? "s" : ""}`;
+        document.getElementById("message").textContent = T[LANG].missed(livesLeft);
         setTimeout(() => {
           slots = new Array(getCurrentPuzzle().solution.length).fill(null);
           buildSlots();
@@ -674,8 +725,8 @@ function validate() {
 function showWinPanel() {
   const puzzle = getCurrentPuzzle();
   document.getElementById("winEmoji").textContent = puzzle.target;
-  document.getElementById("winTitle").textContent = `Combo réussi !`;
-  document.getElementById("winScore").textContent = `Score : ${score} point${score > 1 ? "s" : ""}`;
+  document.getElementById("winTitle").textContent = T[LANG].comboOk;
+  document.getElementById("winScore").textContent = T[LANG].score(score);
   document.getElementById("winPanel").classList.add("show");
 }
 
@@ -704,18 +755,15 @@ function soundVictory() {
 }
 
 function showLosePanel() {
-  document.getElementById("loseScore").textContent =
-    `Score final : ${score} point${score > 1 ? "s" : ""}`;
+  document.getElementById("loseScore").textContent = T[LANG].loseScore(score);
   document.getElementById("losePanel").classList.add("show");
 }
 
 function showLevelPanel(levelNum) {
-  const subtitles = {
-    2: "Les combos se corsent...",
-    3: "Mode expert activé ​​🚨​"
-  };
-  document.getElementById("levelTitle").textContent = `Niveau ${levelNum} débloqué !`;
-  document.getElementById("levelSubtitle").textContent = subtitles[levelNum] || "";
+  document.getElementById("levelTitle").textContent =
+    levelNum === 2 ? T[LANG].level2title : T[LANG].level3title;
+  document.getElementById("levelSubtitle").textContent =
+    levelNum === 2 ? T[LANG].level2sub : T[LANG].level3sub;
   document.getElementById("levelPanel").classList.add("show");
 }
 
@@ -723,7 +771,6 @@ function nextPuzzle() {
   document.getElementById("winPanel").classList.remove("show");
   currentPuzzleIndex++;
 
-  // ===== PANNEAUX NIVEAU =====
   if (currentPuzzleIndex === 10 || currentPuzzleIndex === 20) {
     const levelNum = currentPuzzleIndex === 10 ? 2 : 3;
     showLevelPanel(levelNum);
@@ -733,10 +780,10 @@ function nextPuzzle() {
   if (currentPuzzleIndex >= PUZZLES.length) {
     soundVictory();
     document.getElementById("winEmoji").textContent = "🏆";
-    document.getElementById("winTitle").textContent = "Tu as réussi tous les combos !";
-    document.getElementById("winScore").textContent = `Score total : ${score} / ${PUZZLES.length}`;
+    document.getElementById("winTitle").textContent = T[LANG].allDone;
+    document.getElementById("winScore").textContent = T[LANG].finalScore(score, PUZZLES.length);
     document.getElementById("shareBtn").style.display = "block";
-    document.getElementById("continueBtn").textContent = "Recommencer";
+    document.getElementById("continueBtn").textContent = T[LANG].restart;
     document.getElementById("winPanel").classList.add("show");
     return;
   }
@@ -749,14 +796,14 @@ function nextPuzzle() {
 }
 
 function resetGame() {
-  PUZZLES = genererPartie(); // ← nouvelle pioche à chaque restart !
+  PUZZLES = genererPartie();
   currentPuzzleIndex = 0;
   score = 0;
   livesLeft = 4;
   gameOver = false;
   document.getElementById("winPanel").classList.remove("show");
   document.getElementById("shareBtn").style.display = "none";
-  document.getElementById("continueBtn").textContent = "Continuer ▶";
+  document.getElementById("continueBtn").textContent = T[LANG].continue;
   document.getElementById("losePanel").classList.remove("show");
   document.getElementById("message").textContent = "";
   updateLives();
@@ -766,7 +813,8 @@ function resetGame() {
 function loadPuzzle() {
   const puzzle = getCurrentPuzzle();
   document.getElementById("targetEmoji").textContent = puzzle.target;
-  document.getElementById("hintBox").textContent = `Indice : ${puzzle.hint}`;
+  document.getElementById("hintBox").textContent =
+    `${T[LANG].hint} : ${puzzle.hint[LANG]}`;
   slots = new Array(puzzle.solution.length).fill(null);
   buildGrid();
   buildSlots();
@@ -795,14 +843,20 @@ document.getElementById("levelContinueBtn").addEventListener("click", () => {
 });
 
 document.getElementById("shareBtn").addEventListener("click", () => {
-  const text = `🏆 J'ai terminé Comboji avec ${score}/${PUZZLES.length} combos réussis !\nSi tu veux essayer, c'est par là 👉 https://axopatrick.github.io/comboji/`;
+  const text = T[LANG].shareText(score, PUZZLES.length);
   if (navigator.share) {
     navigator.share({ text });
   } else {
     navigator.clipboard.writeText(text);
-    alert("Texte copié dans le presse-papier !");
+    alert(T[LANG].clipboardMsg);
   }
 });
+
+// ============================================================
+// 🚀 INIT
+// ============================================================
+applyTranslations();
+
 </script>
 </body>
 </html>
