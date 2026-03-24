@@ -555,11 +555,10 @@ function buildGrid() {
   const puzzle = getCurrentPuzzle();
   const solution = puzzle.solution;
   const needed = 16 - solution.length;
-  const shuffled = [...DISTRACTORS]
+  const possibleDistractors = [...DISTRACTORS]
     .filter(d => !solution.includes(d))
-    .sort(() => Math.random() - 0.5);
-  const distractors = shuffled.slice(0, needed);
-  const allEmojis = [...solution, ...distractors].sort(() => Math.random() - 0.5);
+  const distractors = possibleDistractors.slice(0, needed);
+  const allEmojis = shuffle([...solution, ...distractors]);
 
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
