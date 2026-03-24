@@ -12,10 +12,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Comboji</title>
-
-<!-- ☕ Script Ko-fi chargé une fois dans le head -->
-<script type='text/javascript' src='https://storage.ko-fi.com/cdn/widget/Widget_2.js'></script>
-
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -197,10 +193,11 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  /* plus d'animation ici ! */
 }
 
 .mini-tuto > * {
-  animation: floating 3s ease-in-out infinite;
+  animation: floating 3s ease-in-out infinite; /* ← sur chaque enfant */
 }
 
 .mini-tuto > *:nth-child(1) { animation-delay: 0s; }
@@ -209,6 +206,7 @@
 .mini-tuto > *:nth-child(4) { animation-delay: 0.6s; }
 .mini-tuto > *:nth-child(5) { animation-delay: 0.8s; }
 
+  }
   .mini-tuto .plus {
     font-size: 1.5rem;
     opacity: 0.7;
@@ -338,8 +336,14 @@
       <div class="panel-score" id="winScore"></div>
       <button class="panel-btn" id="shareBtn" style="display:none; background:#4caf50;"></button>
      
-      <!-- ☕ KOFI — div vide, rempli dynamiquement -->
-      <div id="kofiBtn" style="display:none; margin-top: 4px;"></div>
+ <!-- ☕ KOFI — visible uniquement à la fin -->
+    <div id="kofiBtn" style="display:none; margin-top: 4px;">
+      <script type='text/javascript' src='https://storage.ko-fi.com/cdn/widget/Widget_2.js'></script>
+      <script type='text/javascript'>
+        kofiwidget2.init('Offrez-moi un café', '#e94560', 'B0B21WJ8IF');
+        kofiwidget2.draw();
+      </script>
+    </div>
      
       <button class="panel-btn" id="continueBtn"></button>
     </div>
@@ -398,10 +402,9 @@ const T = {
     share:          "Partager 🎉",
     shareText:      (n, t) => `🏆 J'ai terminé Comboji avec ${n}/${t} combos réussis !\nSi tu veux essayer, c'est par là 👉 https://axopatrick.github.io/comboji/`,
     clipboardMsg:   "Texte copié dans le presse-papier !",
-    kofiBtn:        "m'offrir un café",
   },
   en: {
-    creditBy:       "An emoji puzzle game by",
+    creditBy:       "A game by",
     playBtn:        "▶ PLAY",
     targetLabel:    "Combine the emojis to create this one",
     hint:           "Hint",
@@ -422,7 +425,6 @@ const T = {
     share:          "Share 🎉",
     shareText:      (n, t) => `🏆 I completed Comboji with ${n}/${t} combos!\nGive it a try 👉 https://axopatrick.github.io/comboji/`,
     clipboardMsg:   "Copied to clipboard!",
-    kofiBtn:        "buy me a coffee",
   }
 };
 
@@ -440,12 +442,14 @@ function applyTranslations() {
 }
 
 // ============================================================
-// 📚 CATALOGUE
+// 📚 CATALOGUE — AJOUTE TES NOUVELLES ÉNIGMES ICI !
+// Chaque énigme a un hint en français ET en anglais :
+//   hint: { fr: "Indice", en: "Hint" }
 // ============================================================
 
 const CATALOGUE = {
 
-  taille2: [
+ taille2: [
     { target:"🦋", hint:{ fr:"Mue",           en:"Metamorphosis" }, solution:["🐛","⏳"] },
     { target:"🌈", hint:{ fr:"Réfraction",    en:"Refraction"    }, solution:["☀️","🌧️"] },
     { target:"🎠", hint:{ fr:"Manège",         en:"Carousel"      }, solution:["🐴","🎡"] },
@@ -453,7 +457,7 @@ const CATALOGUE = {
     { target:"🛟", hint:{ fr:"Insubmersible",  en:"Unsinkable"    }, solution:["🧊","🛳️"] },
     { target:"🕺", hint:{ fr:"Disco",          en:"Disco"         }, solution:["🌡️","🪩"] },
     { target:"🌊", hint:{ fr:"Hokusai",        en:"Hokusai"       }, solution:["🖌️","⛩️"] },
-    { target:"🧞‍♂️", hint:{ fr:"Souhait",    en:"Wish"          }, solution:["🫖","👋"] },
+    { target:"🧞‍♂️", hint:{ fr:"Souhait",        en:"Wish"          }, solution:["🫖","👋"] },
     { target:"🦈", hint:{ fr:"Jaws",           en:"Jaws"          }, solution:["🏊‍♀️","🩸"] },
     { target:"🐺", hint:{ fr:"Garou",          en:"Werewolf"      }, solution:["🌕","🧍‍♂️"] },
     { target:"👁️", hint:{ fr:"Mordor",        en:"Mordor"        }, solution:["🌋","💍"] },
@@ -464,7 +468,7 @@ const CATALOGUE = {
     { target:"🧟", hint:{ fr:"Romero",         en:"Romero"        }, solution:["🪦","🌙","🧠"] },
     { target:"🍟​", hint:{ fr:"Tubercule",      en:"French"     }, solution:["🥔​","🔥","🔪"] },
     { target:"🐉", hint:{ fr:"Mythique",       en:"Mythical"      }, solution:["🦎","🔥","🪽"] },
-    { target:"🥫", hint:{ fr:"Pop",       en:"Pop"      }, solution:["🍅","🖼️","🧑🏻‍🦳"] },
+    { target:"🥫", hint:{ fr:"Pop",             en:"Pop"      }, solution:["🍅","🖼️","🧑🏻‍🦳"] },
     { target:"⛄",  hint:{ fr:"Hiver",          en:"Winter"        }, solution:["🎩","🥕","🌨️"] },
     { target:"🍎", hint:{ fr:"Défendu",        en:"Forbidden"     }, solution:["🐍","🌳","👫"] },
     { target:"🧛", hint:{ fr:"Vlad",           en:"Vlad"          }, solution:["🦇","🩸","⚰️"] },
@@ -491,7 +495,7 @@ const CATALOGUE = {
 };
 
 // ============================================================
-// 🎲 PIOCHE
+// 🎲 PIOCHE — ne pas modifier
 // ============================================================
 
 function piocher(liste, n) {
@@ -801,14 +805,7 @@ function nextPuzzle() {
     document.getElementById("winTitle").textContent = T[LANG].allDone;
     document.getElementById("winScore").textContent = T[LANG].finalScore(score, PUZZLES.length);
     document.getElementById("shareBtn").style.display = "block";
-
-    // ☕ Ko-fi : on vide le div, on le rend visible, et on dessine le widget
-    const kofiDiv = document.getElementById("kofiBtn");
-    kofiDiv.innerHTML = "";
-    kofiDiv.style.display = "block";
-    kofiwidget2.init(T[LANG].kofiBtn, '#e94560', 'B0B21WJ8IF');
-    kofiwidget2.draw();
-
+    document.getElementById("kofiBtn").style.display = "block";
     document.getElementById("continueBtn").textContent = T[LANG].restart;
     document.getElementById("winPanel").classList.add("show");
     return;
