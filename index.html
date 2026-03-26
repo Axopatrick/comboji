@@ -491,6 +491,7 @@ const CATALOGUE = {
     { target:"🧝‍♀️", hint:{ fr:"Légende",     en:"Legend"        }, solution:["🗡️","🛡️","🧚","🏰"] },
     { target:"🏔️🏔️", hint:{ fr:"Laura",     en:"Laura"        }, solution:["👨🏻‍💼","☕","🦉","🪵"] },
     { target:"🧙‍♂️", hint:{ fr:"Placard",     en:"Closet"        }, solution:["⚡","🦉","🪄","📚"] },
+   { target:"🏨",  hint:{ fr:"Redrum",      en:"Redrum"     }, solution:["🪓","🚪","👭🏻","🥶"] },
     { target:"🍕",  hint:{ fr:"Margherita",     en:"Margherita"    }, solution:["🍅","🧀","👨‍🍳","🤌"] },
     { target:"💎",  hint:{ fr:"Heisenberg",     en:"Heisenberg"    }, solution:["🚐","⚗️","🌵","🥽"] },
 
@@ -511,9 +512,9 @@ function piocher(liste, n) {
 
 function genererPartie() {
   return [
-    ...piocher(CATALOGUE.taille2, 10),
-    ...piocher(CATALOGUE.taille3, 10),
-    ...piocher(CATALOGUE.taille4, 10),
+    ...piocher(CATALOGUE.taille2, 12),
+    ...piocher(CATALOGUE.taille3, 12),
+    ...piocher(CATALOGUE.taille4, 12),
   ];
 }
 
@@ -799,8 +800,8 @@ function nextPuzzle() {
   document.getElementById("winPanel").classList.remove("show");
   currentPuzzleIndex++;
 
-  if (currentPuzzleIndex === 10 || currentPuzzleIndex === 20) {
-    const levelNum = currentPuzzleIndex === 10 ? 2 : 3;
+  if (currentPuzzleIndex === 12 || currentPuzzleIndex === 24) {
+    const levelNum = currentPuzzleIndex === 12 ? 2 : 3;
     showLevelPanel(levelNum);
     return;
   }
