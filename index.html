@@ -875,6 +875,7 @@ function nextPuzzle() {
 
   if (currentPuzzleIndex >= PUZZLES.length) {
     soundVictory();
+   spawnFireworks();
     document.getElementById("winEmoji").textContent = "🏆";
     document.getElementById("winTitle").textContent = T[LANG].allDone;
     document.getElementById("winScore").textContent = T[LANG].finalScore(score, PUZZLES.length);
