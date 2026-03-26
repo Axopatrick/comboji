@@ -284,6 +284,21 @@
     box-shadow: 0 4px 24px rgba(254,108,219,0.4);
   }
   #playBtn:hover { transform: scale(1.08); box-shadow: 0 6px 32px rgba(254,108,219,0.6); }
+  
+  #speedrunBtn {
+  font-size: 1rem;
+  padding: 16px 40px;
+  border-radius: 50px;
+  border: 2px solid #ee48a5;
+  background: transparent;
+  color: #ee48a5;
+  font-weight: bold;
+  cursor: pointer;
+  letter-spacing: 2px;
+  margin-top: 18px;
+  transition: transform 0.2s, background 0.2s;
+}
+#speedrunBtn:hover { transform: scale(1.08); background: rgba(238,72,165,0.15); }
 
   #game { display: none; }
 
@@ -321,6 +336,7 @@
     </a>
   </p>
   <button id="playBtn" onclick="startGame()"></button>
+  <button id="speedrunBtn">⏱️ SPEEDRUN</button>
 </div>
 
 <!-- ===== JEU ===== -->
@@ -339,6 +355,7 @@
   <button class="validate-btn" id="validateBtn" disabled></button>
 
   <div class="lives" id="lives"></div>
+  <div id="chronoDisplay" style="display:none; font-size:1.rem; letter-spacing:3px; opacity:0.85; margin:0;">⏱️ 00:00</div>
   <div class="message" id="message"></div>
 
   <!-- Panel victoire manche -->
@@ -552,6 +569,10 @@ let gameOver = false;
 let score = 0;
 let draggedEmoji = null;
 let draggedFrom = null;
+let isSpeedrun = false;
+let chronoInterval = null;
+let chronoSeconds = 0;
+let bestTime = localStorage.getItem("comboji_best_time") ? parseInt(localStorage.getItem("comboji_best_time")) : null;
 
 function shuffle(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -561,11 +582,38 @@ function shuffle(array) {
   return array;
 }
 
-function startGame() {
+function formatTime(s) {
+  const m = String(Math.floor(s / 60)).padStart(2, "0");
+  const sec = String(s % 60).padStart(2, "0");
+  return `⏱️ ${m}:${sec}`;
+}
+
+function startChrono() {
+  chronoSeconds = 0;
+  document.getElementById("chronoDisplay").style.display = "block";
+  document.getElementById("chronoDisplay").textContent = formatTime(0);
+  clearInterval(chronoInterval);
+  chronoInterval = setInterval(() => {
+    chronoSeconds++;
+    document.getElementById("chronoDisplay").textContent = formatTime(chronoSeconds);
+  }, 1000);
+}
+
+function stopChrono() {
+  clearInterval(chronoInterval);
+}
+
+function startGame(speedrun = false) {
+  isSpeedrun = speedrun;
   PUZZLES = genererPartie();
   currentPuzzleIndex = 0;
+  score = 0;
+  livesLeft = 4;
+  gameOver = false;
   document.getElementById("titleScreen").style.display = "none";
   document.getElementById("game").style.display = "contents";
+  document.getElementById("chronoDisplay").style.display = "none";
+  if (isSpeedrun) startChrono();
   loadPuzzle();
   updateLives();
 }
@@ -851,6 +899,7 @@ function soundVictory() {
 }
 
 function showLosePanel() {
+  if (isSpeedrun) stopChrono();
   document.getElementById("loseScore").textContent = T[LANG].loseScore(score);
   document.getElementById("losePanel").classList.add("show");
 }
@@ -873,18 +922,37 @@ function nextPuzzle() {
     return;
   }
 
-  if (currentPuzzleIndex >= PUZZLES.length) {
-    soundVictory();
-   spawnFireworks();
-    document.getElementById("winEmoji").textContent = "🏆";
-    document.getElementById("winTitle").textContent = T[LANG].allDone;
-    document.getElementById("winScore").textContent = T[LANG].finalScore(score, PUZZLES.length);
-    document.getElementById("shareBtn").style.display = "block";
-    document.getElementById("kofiBtn").style.display = "block";
-    document.getElementById("continueBtn").textContent = T[LANG].restart;
-    document.getElementById("winPanel").classList.add("show");
-    return;
+ if (currentPuzzleIndex >= PUZZLES.length) {
+  soundVictory();
+  spawnFireworks();
+
+  let timeText = "";
+  let recordText = "";
+
+  if (isSpeedrun) {
+    stopChrono();
+    const m = String(Math.floor(chronoSeconds / 60)).padStart(2,"0");
+    const s = String(chronoSeconds % 60).padStart(2,"0");
+    timeText = `\n⏱️: ${m}:${s}`;
+
+    if (bestTime === null || chronoSeconds < bestTime) {
+      bestTime = chronoSeconds;
+      localStorage.setItem("comboji_best_time", bestTime);
+      recordText = "\n 🥇 Nouveau record !";
+    }
   }
+
+  document.getElementById("winEmoji").textContent = "🏆";
+  document.getElementById("winTitle").textContent = T[LANG].allDone;
+  document.getElementById("winScore").textContent =
+    T[LANG].finalScore(score, PUZZLES.length) + timeText + recordText;
+  document.getElementById("shareBtn").style.display = "block";
+  document.getElementById("kofiBtn").style.display = "block";
+  document.getElementById("continueBtn").textContent = T[LANG].restart;
+  document.getElementById("winPanel").classList.add("show");
+  return;
+}
+
 
   livesLeft = 4;
   gameOver = false;
@@ -894,6 +962,9 @@ function nextPuzzle() {
 }
 
 function resetGame() {
+  stopChrono();
+  document.getElementById("chronoDisplay").style.display = "none";
+  isSpeedrun = false;
   PUZZLES = genererPartie();
   currentPuzzleIndex = 0;
   score = 0;
@@ -955,6 +1026,8 @@ document.getElementById("shareBtn").addEventListener("click", () => {
 // 🚀 INIT
 // ============================================================
 applyTranslations();
+document.getElementById("playBtn").addEventListener("click", () => startGame(false));
+document.getElementById("speedrunBtn").addEventListener("click", () => startGame(true));
 
 </script>
 </body>
