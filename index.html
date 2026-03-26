@@ -187,7 +187,20 @@
     0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
     100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
   }
-
+.firework-particle {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 200;
+  animation: particleFly linear forwards;
+}
+@keyframes particleFly {
+  0%   { opacity: 1; transform: translate(0,0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.3); }
+}
+ 
 .mini-tuto {
   font-size: 3rem;
   display: flex;
@@ -703,7 +716,59 @@ function spawnConfetti() {
     setTimeout(() => el.remove(), 4000);
   }
 }
+function spawnFireworks() {
+  const colors = ["#e94560","#ffd700","#00bcd4","#ff9800","#ee48a5","#4caf50","#ffffff"];
 
+  function oneExplosion(x, y) {
+  playBoom(); // 💥
+    const count = 28;
+    for (let i = 0; i < count; i++) {
+      const el = document.createElement("div");
+      el.className = "firework-particle";
+      const angle = (2 * Math.PI / count) * i;
+      const force = 80 + Math.random() * 120;
+      el.style.left = x + "px";
+      el.style.top = y + "px";
+      el.style.background = colors[Math.floor(Math.random() * colors.length)];
+      el.style.setProperty("--dx", Math.cos(angle) * force + "px");
+      el.style.setProperty("--dy", Math.sin(angle) * force + "px");
+      el.style.animationDuration = (0.8 + Math.random() * 0.8) + "s";
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 2000);
+    }
+  }
+
+ function playBoom() {
+    const ctx = getCtx(); // ← le contexte partagé que tu as déjà !
+    const buffer = ctx.createBuffer(1, ctx.sampleRate * 0.6, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < data.length; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / data.length, 2);
+    }
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.8, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+    const filter = ctx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.value = 400;
+    source.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    source.start();
+  }
+  const positions = [
+    { x: window.innerWidth * 0.2,  y: window.innerHeight * 0.3  },
+    { x: window.innerWidth * 0.8,  y: window.innerHeight * 0.25 },
+    { x: window.innerWidth * 0.5,  y: window.innerHeight * 0.2  },
+    { x: window.innerWidth * 0.35, y: window.innerHeight * 0.5  },
+    { x: window.innerWidth * 0.65, y: window.innerHeight * 0.45 },
+  ];
+  positions.forEach((pos, i) => {
+    setTimeout(() => oneExplosion(pos.x, pos.y), i * 350);
+  });
+}
 function validate() {
   if (gameOver) return;
   document.getElementById("validateBtn").disabled = true;
