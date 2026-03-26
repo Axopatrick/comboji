@@ -471,12 +471,12 @@ const CATALOGUE = {
     { target:"🍟​", hint:{ fr:"Tubercule",      en:"French"     }, solution:["🥔​","🔥","🔪"] },
     { target:"🐉", hint:{ fr:"Mythique",       en:"Mythical"      }, solution:["🦎","🔥","🪽"] },
     { target:"🥫", hint:{ fr:"Pop",             en:"Pop"      }, solution:["🍅","🖼️","🧑🏻‍🦳"] },
-    { target:"⛄",  hint:{ fr:"Hiver",          en:"Winter"        }, solution:["🎩","🥕","🌨️"] },
     { target:"🍎", hint:{ fr:"Défendu",        en:"Forbidden"     }, solution:["🐍","🌳","👫"] },
    { target:"🍿", hint:{ fr:"Cinema",        en:"Movies"     }, solution:["🌽","🔥","📽️"] },
     { target:"🧛", hint:{ fr:"Vlad",           en:"Vlad"          }, solution:["🦇","🩸","⚰️"] },
     { target:"🚀",  hint:{ fr:"2001",           en:"2001"          }, solution:["🐒","🦴","⬛"] },
     { target:"🤡", hint:{ fr:"Caniveau",       en:"Gutter"        }, solution:["🕳️","⛵","🎈"] },
+    { target:"🏛️", hint:{ fr:"Hill Valley",       en:"Hill Valley"        }, solution:["🛹","🎸","⏰"] },
     { target:"⚡",  hint:{ fr:"Paratonnerre",   en:"Lightning rod" }, solution:["🗝️","☁️","🪁"] },
     { target:"🕸️",  hint:{ fr:"Responsabilités",   en:"Responsbilities" }, solution:["🕷️​","☢️","👦🏻"] },
   ],
@@ -486,6 +486,7 @@ const CATALOGUE = {
     { target:"🦖",  hint:{ fr:"Ambre",          en:"Amber"         }, solution:["🏝️","🧬","🦟","🐸"] },
     { target:"🧙‍♀️", hint:{ fr:"Salem",       en:"Salem"         }, solution:["🐈‍⬛","🔮","🧹","🫚"] },
     { target:"🥷",  hint:{ fr:"Cowabunga",      en:"Cowabunga"     }, solution:["🐢","🧪","🍕","🗽"] },
+   { target:"⛄",  hint:{ fr:"Hiver",          en:"Winter"        }, solution:["🎩","🥕","🌨️","🧣"] },
     { target:"🕶️", hint:{ fr:"Neo",            en:"Neo"           }, solution:["💻","🐇","💊","🥋"] },
     { target:"👂",  hint:{ fr:"Vincent",        en:"Vincent"       }, solution:["🎨","🌻","🔪","🖌️"] },
     { target:"🧝‍♀️", hint:{ fr:"Légende",     en:"Legend"        }, solution:["🗡️","🛡️","🧚","🏰"] },
@@ -512,9 +513,9 @@ function piocher(liste, n) {
 
 function genererPartie() {
   return [
-    ...piocher(CATALOGUE.taille2, 12),
-    ...piocher(CATALOGUE.taille3, 12),
-    ...piocher(CATALOGUE.taille4, 12),
+    ...piocher(CATALOGUE.taille2, 13),
+    ...piocher(CATALOGUE.taille3, 13),
+    ...piocher(CATALOGUE.taille4, 13),
   ];
 }
 
@@ -801,8 +802,8 @@ function nextPuzzle() {
   document.getElementById("winPanel").classList.remove("show");
   currentPuzzleIndex++;
 
-  if (currentPuzzleIndex === 12 || currentPuzzleIndex === 24) {
-    const levelNum = currentPuzzleIndex === 12 ? 2 : 3;
+  if (currentPuzzleIndex === 13 || currentPuzzleIndex === 26) {
+    const levelNum = currentPuzzleIndex === 13 ? 2 : 3;
     showLevelPanel(levelNum);
     return;
   }
