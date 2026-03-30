@@ -527,9 +527,9 @@ const CATALOGUE = {
    { target:"🏨",  hint:{ fr:"Redrum",      en:"Redrum"     }, solution:["🪓","🚪","👭🏻","🥶"] },
     { target:"🍕",  hint:{ fr:"Margherita",     en:"Margherita"    }, solution:["🍅","🧀","👨‍🍳","🤌"] },
     { target:"💎",  hint:{ fr:"Heisenberg",     en:"Heisenberg"    }, solution:["🚐","⚗️","🌵","🥽"] },
+   { target:"🪎",  hint:{ fr:"Stevenson",     en:"Stevenson"    }, solution:["🏴‍☠️","🗺️","🧭","🏝️"] },
 
 
-   
   ]
 
 };
@@ -545,9 +545,9 @@ function piocher(liste, n) {
 
 function genererPartie() {
   return [
-    ...piocher(CATALOGUE.taille2, 13),
+    ...piocher(CATALOGUE.taille2, 14),
     ...piocher(CATALOGUE.taille3, 14),
-    ...piocher(CATALOGUE.taille4, 13),
+    ...piocher(CATALOGUE.taille4, 14),
   ];
 }
 
@@ -920,8 +920,8 @@ function nextPuzzle() {
   document.getElementById("winPanel").classList.remove("show");
   currentPuzzleIndex++;
 
-  if (currentPuzzleIndex === 13 || currentPuzzleIndex === 27) {
-    const levelNum = currentPuzzleIndex === 13 ? 2 : 3;
+  if (currentPuzzleIndex === 14 || currentPuzzleIndex === 28) {
+    const levelNum = currentPuzzleIndex === 14 ? 2 : 3;
     showLevelPanel(levelNum);
     return;
   }
