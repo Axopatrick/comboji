@@ -1,462 +1,1060 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+ <!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-9JF2BMB3CB"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-9JF2BMB3CB');
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WikiPhoto</title>
+<title>Comboji</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: 'Linux Libertine', 'Georgia', serif;
-    background: #f8f9fa;
-    color: #202122;
-    min-height: 100vh;
+    font-family: sans-serif;
+    background: #1a1a2e;
+    color: white;
     display: flex;
     flex-direction: column;
     align-items: center;
+    min-height: 100vh;
     padding: 20px;
+    gap: 24px;
   }
 
   h1 {
-    font-size: 2rem;
-    margin-bottom: 4px;
-    color: #202122;
-    letter-spacing: 1px;
-    font-weight: normal;
-    border-bottom: 1px solid #a2a9b1;
-    padding-bottom: 6px;
-    width: 100%;
-    max-width: 700px;
+    font-size: 1.8rem;
+    margin-top: 10px;
+    letter-spacing: 4px;
+    font-weight: 800;
+  }
+
+  .target-zone {
     text-align: center;
-  }
-  
-  footer {
-  width: 100%;
-  max-width: 700px;
-  background: #eaecf0;
-  text-align: center;
-  padding: 10px;
-  font-size: 0.85rem;
-  color: #54595d;
-  margin-top: auto;
-}
-
-footer a {
-  color: #3366cc;
-  text-decoration: none;
-}
-
-footer a:hover {
-  text-decoration: underline;
-}
-
-  #subtitle {
-    font-size: 1rem;
-    color: #54595d;
-    margin-bottom: 20px;
-    font-style: italic;
-  }
-
-  #hud {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    max-width: 700px;
-    margin-bottom: 15px;
-    font-size: 1.1rem;
-    background: #eaecf0;
-    padding: 8px 16px;
-    border-radius: 8px;
-  }
-
-  #lives { font-size: 1.4rem; }
-  #streak-display { color: #54595d; font-size: 1rem; }
-
-  #article-title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 10px;
-	margin-top: 10px;
-    color: #202122;
-    background: #ffffff;
-    padding: 12px 24px;
-    border-radius: 8px;
-    border: 1px solid #a2a9b1;
-    max-width: 700px;
-    width: 100%;
-  }
-
-  #intro-box {
-    background: #ffffff;
-    border-left: 4px solid #3366cc;
-    padding: 12px 16px;
-    border-radius: 4px;
-    margin-bottom: 20px;
-    max-width: 700px;
-    width: 100%;
-    font-size: 0.9rem;
-    line-height: 1.6;
-    color: #202122;
-    display: none;
-    border: 1px solid #a2a9b1;
-    border-left: 4px solid #3366cc;
-  }
-
-  #images-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-    max-width: 700px;
-    width: 100%;
-    margin-bottom: 20px;
-  }
-
-  .img-card {
-    background: #ffffff;
-    border-radius: 8px;
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    border: 2px solid #a2a9b1;
-  }
-
-  .img-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 16px rgba(51,102,204,0.2);
-    border-color: #3366cc;
-  }
-
-  .img-card img {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-    display: block;
-  }
-
-  .img-card.correct {
-    border-color: #4caf50;
-    animation: pulse-green 0.5s ease;
-  }
-
-  .img-card.wrong {
-    border-color: #f44336;
-    animation: shake 0.4s ease;
-  }
-
-  .img-card.reveal-correct {
-    border-color: #4caf50;
-  }
-
-  @keyframes pulse-green {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.04); }
-    100% { transform: scale(1); }
-  }
-
-  @keyframes shake {
-    0%,100% { transform: translateX(0); }
-    25% { transform: translateX(-8px); }
-    75% { transform: translateX(8px); }
-  }
-
-  #hint-btn {
-    background: #ffffff;
-    color: #3366cc;
-    border: 1px solid #3366cc;
-    padding: 8px 18px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-	margin-top: 10px;
-    margin-bottom: 20px;
-    transition: background 0.2s, color 0.2s;
-    font-family: arial;
-  }
-
-  #hint-btn:hover:not(:disabled) {
-    background: #3366cc;
-    color: white;
-  }
-
-  #hint-btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
-
-  #message {
-    font-size: 1.2rem;
-    min-height: 1.6rem;
-    margin-bottom: 10px;
-    font-weight: bold;
-    color: #202122;
-  }
-
-  #loading {
-    margin-top: 40px;
-    color: #54595d;
-    font-style: italic;
-  }
-
-  /* GAME OVER */
-  #gameover {
-    display: none;
     flex-direction: column;
     align-items: center;
-    gap: 14px;
-    background: #ffffff;
-    border: 1px solid #a2a9b1;
-    border-radius: 12px;
-    padding: 32px;
-    max-width: 400px;
-    width: 100%;
-    text-align: center;
-    margin-top: 20px;
+    gap: 8px;
+  }
+  .target-label { font-size: 0.9rem; opacity: 0.7; }
+  .target-label strong { font-weight: 800; }
+  .target-emoji { font-size: 3rem;
+   animation: floatTarget 3s ease-in-out infinite;}
+ 
+ @keyframes floatTarget {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-6px); }
+}
+  .hint-box { font-size: 0.85rem; opacity: 0.6; letter-spacing: 1px; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 64px);
+    gap: 10px;
   }
 
-  #gameover h2 {
+  .emoji-cell {
+    width: 64px;
+    height: 64px;
     font-size: 1.8rem;
-    font-weight: normal;
-    color: #202122;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #16213e;
+    border-radius: 12px;
+    border: 2px solid #0f3460;
+    cursor: grab;
+    user-select: none;
+    transition: transform 0.1s, border-color 0.2s;
+  }
+  .emoji-cell:hover { transform: scale(1.1); border-color: #e94560; }
+  .emoji-cell.dragging { opacity: 0.4; }
+  .emoji-cell.used { opacity: 0.3; pointer-events: none; }
+
+  .slots { display: flex; gap: 16px; }
+
+  .slot {
+    width: 72px;
+    height: 72px;
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #16213e;
+    border-radius: 12px;
+    border: 2px dashed #0f3460;
+    transition: border-color 0.3s, background 0.3s;
+    position: relative;
+    cursor: pointer;
+  }
+  .slot.drag-over { border-color: #e94560; background: #1f2a50; }
+  .slot.correct { border-color: #4caf50; background: #1a3a1a; }
+  .slot.wrong { border-color: #f44336; background: #3a1a1a; }
+  .slot.shake { animation: shake 0.4s ease; }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+  .slot .remove-btn {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 20px;
+    height: 20px;
+    background: #e94560;
+    border-radius: 50%;
+    font-size: 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    color: white;
   }
 
-  #go-streak, #go-record {
-    font-size: 1.1rem;
-    color: #54595d;
-  }
-
-  #restart-btn {
-    background: #3366cc;
+  .validate-btn {
+    padding: 12px 32px;
+    font-size: 1rem;
+    background: #e94560;
     color: white;
     border: none;
-    padding: 10px 28px;
-    border-radius: 6px;
+    border-radius: 10px;
     cursor: pointer;
+    font-weight: bold;
+    letter-spacing: 1px;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+  .validate-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .validate-btn:not(:disabled):hover { transform: scale(1.05); }
+
+  .lives { font-size: 1.2rem; letter-spacing: 4px; margin: 0; padding:0; }
+
+  .message { font-size: 0.95rem; min-height: 1.4em; opacity: 0.85; }
+
+  .panel-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+  }
+  .panel-overlay.show { display: flex; }
+
+  .panel {
+    background: #16213e;
+    border: 2px solid #0f3460;
+    border-radius: 20px;
+    padding: 36px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    max-width: 320px;
+    text-align: center;
+  }
+  .panel-emoji { font-size: 3.5rem; }
+  .panel-title { font-size: 1.3rem; font-weight: 800; }
+  .panel-score { font-size: 1.1rem; opacity: 0.8; }
+  .panel-btn {
+    margin-top: 8px;
+    padding: 12px 28px;
     font-size: 1rem;
-    font-family: inherit;
-    transition: background 0.2s;
+    background: #e94560;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    letter-spacing: 1px;
+    transition: transform 0.1s;
+  }
+  .panel-btn:hover { transform: scale(1.05); }
+
+  .confetti-piece {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    animation: confettiFall linear forwards;
+    z-index: 200;
+    pointer-events: none;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+.firework-particle {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 200;
+  animation: particleFly linear forwards;
+}
+@keyframes particleFly {
+  0%   { opacity: 1; transform: translate(0,0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.3); }
+}
+ 
+.mini-tuto {
+  font-size: 3rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  /* plus d'animation ici ! */
+}
+
+.mini-tuto > * {
+  animation: floating 3s ease-in-out infinite; /* ← sur chaque enfant */
+}
+
+.mini-tuto > *:nth-child(1) { animation-delay: 0s; }
+.mini-tuto > *:nth-child(2) { animation-delay: 0.2s; }
+.mini-tuto > *:nth-child(3) { animation-delay: 0.4s; }
+.mini-tuto > *:nth-child(4) { animation-delay: 0.6s; }
+.mini-tuto > *:nth-child(5) { animation-delay: 0.8s; }
+
+  }
+  .mini-tuto .plus {
+    font-size: 1.5rem;
+    opacity: 0.7;
+  }
+  @keyframes floating {
+    0%   { transform: translateY(0px); }
+    50%  { transform: translateY(-8px); }
+    100% { transform: translateY(0px); }
   }
 
-  #restart-btn:hover {
-    background: #2a55aa;
+  #titleScreen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100%;
+    position: fixed;
+    inset: 0;
+    background: #1a1a2e;
+    z-index: 999;
+    gap: 0;
+  }
+  #titleName {
+    width: 380px;
+    margin-top: 15px;
+    margin-bottom: 0;
+    height: auto;
+    filter: drop-shadow(4px 4px 0px rgba(0,0,0,0.5));
+  }
+  #gameLogo {
+    width: 280px;
+    height: auto;
+    margin-top: 0px;
+    margin-bottom: -10px;
+    filter: drop-shadow(4px 4px 0px rgba(0,0,0,0.5));
+  }
+  #creditText {
+    color: #aaaaaa;
+    font-size: 14px;
+    margin: 10px 0;
+    margin-top: 10px;
+    margin-bottom: 25px;
+  }
+  #creditText a {
+    color: #aaaaaa;
+    text-decoration: underline;
+  }
+  #creditText a:hover { color: #ffffff; }
+
+  #playBtn {
+    font-size: 1.2rem;
+    padding: 16px 52px;
+    border-radius: 50px;
+    border: none;
+    background: linear-gradient(135deg, #b21971, #ee48a5);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    letter-spacing: 2px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 24px rgba(254,108,219,0.4);
+  }
+  #playBtn:hover { transform: scale(1.08); box-shadow: 0 6px 32px rgba(254,108,219,0.6); }
+  
+  #speedrunBtn {
+  font-size: 1rem;
+  padding: 16px 40px;
+  border-radius: 50px;
+  border: 2px solid #ee48a5;
+  background: transparent;
+  color: #ee48a5;
+  font-weight: bold;
+  cursor: pointer;
+  letter-spacing: 2px;
+  margin-top: 18px;
+  transition: transform 0.2s, background 0.2s;
+}
+#speedrunBtn:hover { transform: scale(1.08); background: rgba(238,72,165,0.15); }
+
+  #game { display: none; }
+
+  .level-badge {
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #b21971, #ee48a5);
+    color: white;
+  }
+  .level-badge.level3 {
+    background: linear-gradient(135deg, #e94560, #ff6b00);
   }
 </style>
 </head>
 <body>
 
-<h1>WikiPiki</h1>
-<div id="subtitle">Trouve l'image qui correspond à l'article !</div>
-
-<div id="hud">
-  <div id="lives">🎓🎓🎓</div>
-  <div id="streak-display">Score : 0</div>
+<!-- ===== ÉCRAN TITRE ===== -->
+<div id="titleScreen">
+  <div class="mini-tuto">
+    <span>🐝</span>
+    <span class="plus">+</span>
+    <span>🌺</span>
+    <span class="plus">=</span>
+    <span>🍯</span>
+  </div>
+  <img src="logocomboji.png" alt="Comboji" id="titleName">
+  <p id="creditText">
+    <span id="creditBy"></span>
+    <a href="https://www.instagram.com/patrick_baud" target="_blank">
+      <strong>Patrick Baud</strong>
+    </a>
+  </p>
+  <button id="playBtn" onclick="startGame()"></button>
+  <button id="speedrunBtn">⏱️ SPEEDRUN</button>
 </div>
 
-<div id="article-title">Chargement...</div>
-<div id="intro-box"></div>
+<!-- ===== JEU ===== -->
+<div id="game">
+  <img src="logocomboji.png" alt="Comboji" id="gameLogo">
 
-<div id="message"></div>
-<div id="images-grid"></div>
-<button id="hint-btn">Afficher l'intro de l'article (-1🎓)</button>
-<div id="loading"></div>
+  <div class="target-zone">
+    <div class="target-label"><strong id="targetLabel"></strong></div>
+    <div class="target-emoji" id="targetEmoji"></div>
+    <div class="hint-box" id="hintBox"></div>
+  </div>
 
-<div id="gameover">
-  <h2>💀 Partie terminée</h2>
-  <div id="go-streak"></div>
-  <div id="go-record"></div>
-  <button id="restart-btn">🔄 Rejouer</button>
+  <div class="grid" id="grid"></div>
+  <div class="slots" id="slots"></div>
+
+  <button class="validate-btn" id="validateBtn" disabled></button>
+
+  <div class="lives" id="lives"></div>
+  <div id="chronoDisplay" style="display:none; font-size:1.rem; letter-spacing:3px; opacity:0.85; margin:0;">⏱️ 00:00</div>
+  <div class="message" id="message"></div>
+
+  <!-- Panel victoire manche -->
+  <div class="panel-overlay" id="winPanel">
+    <div class="panel">
+      <div class="panel-emoji" id="winEmoji"></div>
+      <div class="panel-title" id="winTitle"></div>
+      <div class="panel-score" id="winScore"></div>
+      <button class="panel-btn" id="shareBtn" style="display:none; background:#4caf50;"></button>
+     
+ <!-- ☕ KOFI — visible uniquement à la fin -->
+    <div id="kofiBtn" style="display:none; margin-top: 4px;">
+      <script type='text/javascript' src='https://storage.ko-fi.com/cdn/widget/Widget_2.js'></script>
+      <script type='text/javascript'>
+        kofiwidget2.init('Offrez-moi un café', '#e94560', 'B0B21WJ8IF');
+        kofiwidget2.draw();
+      </script>
+    </div>
+     
+      <button class="panel-btn" id="continueBtn"></button>
+    </div>
+  </div>
+
+  <!-- Panel défaite -->
+  <div class="panel-overlay" id="losePanel">
+    <div class="panel">
+      <div class="panel-emoji">💀</div>
+      <div class="panel-title" id="losePanelTitle"></div>
+      <div class="panel-score" id="loseScore"></div>
+      <button class="panel-btn" id="restartBtn"></button>
+    </div>
+  </div>
+
+  <!-- Panel niveau débloqué -->
+  <div class="panel-overlay" id="levelPanel">
+    <div class="panel">
+      <div class="panel-emoji">🔓</div>
+      <div class="panel-title" id="levelTitle"></div>
+      <div class="panel-score" id="levelSubtitle"></div>
+      <button class="panel-btn" id="levelContinueBtn"></button>
+    </div>
+  </div>
+
 </div>
 
 <script>
+
+// ============================================================
+// 🌍 DÉTECTION DE LANGUE
+// ============================================================
+
 const LANG = navigator.language.startsWith("fr") ? "fr" : "en";
-const API = `https://${LANG}.wikipedia.org/api/rest_v1`;
-const WIKI_API = `https://${LANG}.wikipedia.org/w/api.php`;
 
-let lives = 3;
-let streak = 0;
-let record = parseInt(localStorage.getItem("wikiphoto_record") || "0");
-let correctImageUrl = "";
-let answersLocked = false;
-let hintUsed = false;
-
-function updateHUD() {
-  document.getElementById("lives").textContent = "🎓".repeat(lives) || "💀";
-  document.getElementById("streak-display").textContent = `Score : ${streak}`;
-}
-
-function setMessage(msg) {
-  document.getElementById("message").textContent = msg;
-}
-
-function getImageCount() {
-  if (streak >= 40) return 6;
-  if (streak >= 30) return 6;
-  if (streak >= 20) return 5;
-  if (streak >= 10) return 4;
-  return 3;
-}
-
-async function fetchRandomArticle() {
-  const res = await fetch(`${API}/page/random/summary`);
-  const data = await res.json();
-  if (!data.thumbnail?.source) throw new Error("no image");
-  return {
-    title: data.title,
-    intro: data.extract,
-    image: data.thumbnail.source.replace(/\/\d+px-/, "/400px-")
-  };
-}
-
-async function fetchRandomImages(count) {
-  const images = [];
-  const attempts = count * 4;
-  for (let i = 0; i < attempts && images.length < count; i++) {
-    try {
-      const res = await fetch(`${API}/page/random/summary`);
-      const data = await res.json();
-      if (data.thumbnail?.source) {
-        const url = data.thumbnail.source.replace(/\/\d+px-/, "/400px-");
-        if (!images.includes(url)) images.push(url);
-      }
-    } catch {}
+const T = {
+  fr: {
+    creditBy:       "Un jeu d'association par",
+    playBtn:        "▶ JOUER",
+    targetLabel:    "Combine les emojis pour créer celui-ci",
+    hint:           "Indice",
+    validate:       "VALIDER",
+    comboOk:        "Combo réussi !",
+    score:          (n) => `Score : ${n} point${n > 1 ? "s" : ""}`,
+    missed:         (n) => `❌ Raté ! Il te reste ${n} essai${n > 1 ? "s" : ""}`,
+    allDone:        "Félicitations, tu as terminé Comboji !",
+    finalScore:     (n, t) => `Score total : ${n} / ${t}`,
+    restart:        "Réessayer",
+    continue:       "Continuer ▶",
+    lost:           "Perdu !",
+    loseScore:      (n) => `Score final : ${n} point${n > 1 ? "s" : ""}`,
+    level2title:    "Niveau 2 débloqué !",
+    level3title:    "Niveau 3 débloqué !",
+    level2sub:      "On va ajouter une case...",
+    level3sub:      "Mode expert activé 🚨",
+    share:          "Partager 💞",
+    shareText:      (n, t) => `🏆 J'ai terminé Comboji avec ${n}/${t} combos réussis !\nSi tu veux essayer, c'est par là 👉 https://axopatrick.github.io/comboji/`,
+    clipboardMsg:   "Texte copié dans le presse-papier !",
+  },
+  en: {
+    creditBy:       "A game by",
+    playBtn:        "▶ PLAY",
+    targetLabel:    "Combine the emojis to create this one",
+    hint:           "Hint",
+    validate:       "VALIDATE",
+    comboOk:        "Combo complete!",
+    score:          (n) => `Score: ${n} point${n > 1 ? "s" : ""}`,
+    missed:         (n) => `❌ Wrong! ${n} attempt${n > 1 ? "s" : ""} left`,
+    allDone:        "Congratulations, you completed all combos!",
+    finalScore:     (n, t) => `Final score: ${n} / ${t}`,
+    restart:        "Restart",
+    continue:       "Continue ▶",
+    lost:           "Game over!",
+    loseScore:      (n) => `Final score: ${n} point${n > 1 ? "s" : ""}`,
+    level2title:    "Level 2 unlocked!",
+    level3title:    "Level 3 unlocked!",
+    level2sub:      "Combos are getting harder...",
+    level3sub:      "Expert mode activated 🚨",
+    share:          "Share 🎉",
+    shareText:      (n, t) => `🏆 I completed Comboji with ${n}/${t} combos!\nGive it a try 👉 https://axopatrick.github.io/comboji/`,
+    clipboardMsg:   "Copied to clipboard!",
   }
-  return images;
+};
+
+// Applique les textes statiques au chargement
+function applyTranslations() {
+  document.getElementById("creditBy").textContent    = T[LANG].creditBy + " ";
+  document.getElementById("playBtn").textContent     = T[LANG].playBtn;
+  document.getElementById("targetLabel").textContent = T[LANG].targetLabel;
+  document.getElementById("validateBtn").textContent = T[LANG].validate;
+  document.getElementById("continueBtn").textContent = T[LANG].continue;
+  document.getElementById("restartBtn").textContent  = T[LANG].restart;
+  document.getElementById("shareBtn").textContent    = T[LANG].share;
+  document.getElementById("losePanelTitle").textContent = T[LANG].lost;
+  document.getElementById("levelContinueBtn").textContent = T[LANG].continue;
 }
 
-function shuffle(arr) {
-  for (let i = arr.length - 1; i > 0; i--) {
+// ============================================================
+// 📚 CATALOGUE — AJOUTE TES NOUVELLES ÉNIGMES ICI !
+// Chaque énigme a un hint en français ET en anglais :
+//   hint: { fr: "Indice", en: "Hint" }
+// ============================================================
+
+const CATALOGUE = {
+
+ taille2: [
+    { target:"🦋", hint:{ fr:"Mue",           en:"Metamorphosis" }, solution:["🐛","⏳"] },
+    { target:"🌈", hint:{ fr:"Réfraction",    en:"Refraction"    }, solution:["☀️","🌧️"] },
+    { target:"🎠", hint:{ fr:"Manège",         en:"Carousel"      }, solution:["🐴","🎡"] },
+    { target:"🍯", hint:{ fr:"Bzzz",           en:"Bzzz"          }, solution:["🐝","🌺"] },
+    { target:"🛟", hint:{ fr:"Insubmersible",  en:"Unsinkable"    }, solution:["🧊","🛳️"] },
+    { target:"🕺", hint:{ fr:"Disco",          en:"Disco"         }, solution:["🌡️","🪩"] },
+    { target:"🛸", hint:{ fr:"Maison",           en:"Home"        }, solution:["👽","☎️"] },
+    { target:"🌊", hint:{ fr:"Hokusai",        en:"Hokusai"       }, solution:["🖌️","⛩️"] },
+   { target:"👾", hint:{ fr:"Atari",        en:"Atari"       }, solution:["🕹️","📺"] },
+    { target:"🧞‍♂️", hint:{ fr:"Souhait",        en:"Wish"          }, solution:["🫖","👋"] },
+    { target:"🦈", hint:{ fr:"Jaws",           en:"Jaws"          }, solution:["🏊‍♀️","🩸"] },
+   { target:"👑", hint:{ fr:"Arthur",        en:"Arthur"        }, solution:["🪨","🗡️"] },
+    { target:"🐺", hint:{ fr:"Garou",          en:"Werewolf"      }, solution:["🌕","🧍‍♂️"] },
+    { target:"👁️", hint:{ fr:"Mordor",        en:"Mordor"        }, solution:["🌋","💍"] },
+  ],
+
+  taille3: [
+    { target:"🗿", hint:{ fr:"Pâques",         en:"Easter"        }, solution:["🏝️","🥚","🔔"] },
+    { target:"🧟", hint:{ fr:"Romero",         en:"Romero"        }, solution:["🪦","🌙","🧠"] },
+    { target:"🍟​", hint:{ fr:"Tubercule",      en:"French"     }, solution:["🥔​","🔥","🔪"] },
+    { target:"🐉", hint:{ fr:"Mythique",       en:"Mythical"      }, solution:["🦎","🔥","🪽"] },
+    { target:"🥫", hint:{ fr:"Pop",             en:"Pop"      }, solution:["🍅","🖼️","🧑🏻‍🦳"] },
+    { target:"🍎", hint:{ fr:"Défendu",        en:"Forbidden"     }, solution:["🐍","🌳","👫"] },
+   { target:"🍿", hint:{ fr:"Cinema",        en:"Movies"     }, solution:["🌽","🔥","📽️"] },
+    { target:"🧛", hint:{ fr:"Vlad",           en:"Vlad"          }, solution:["🦇","🩸","⚰️"] },
+    { target:"🚀",  hint:{ fr:"2001",           en:"2001"          }, solution:["🐒","🦴","⬛"] },
+    { target:"🤡", hint:{ fr:"Caniveau",       en:"Gutter"        }, solution:["🕳️","⛵","🎈"] },
+   { target:"🤥", hint:{ fr:"Pantin",       en:"puppet"        }, solution:["🧚‍♀️","🦗","🪵"] },
+    { target:"🏛️", hint:{ fr:"Hill Valley",       en:"Hill Valley"        }, solution:["🛹","🎸","⏰"] },
+    { target:"⚡",  hint:{ fr:"Paratonnerre",   en:"Lightning rod" }, solution:["🗝️","☁️","🪁"] },
+    { target:"🕸️",  hint:{ fr:"Responsabilités",   en:"Responsibilities" }, solution:["🕷️​","☢️","👦🏻"] },
+  ],
+
+  taille4: [
+    { target:"🧜‍♀️", hint:{ fr:"Chimère",        en:"Chimera"       }, solution:["👩","🐟","🌊","​​​🦀​"] },
+    { target:"🦖",  hint:{ fr:"Ambre",          en:"Amber"         }, solution:["🏝️","🧬","🦟","🐸"] },
+    { target:"🧙‍♀️", hint:{ fr:"Salem",       en:"Salem"         }, solution:["🐈‍⬛","🔮","🧹","🫚"] },
+    { target:"🥷",  hint:{ fr:"Cowabunga",      en:"Cowabunga"     }, solution:["🐢","🧪","🍕","🗽"] },
+   { target:"⛄",  hint:{ fr:"Hiver",          en:"Winter"        }, solution:["🎩","🥕","🌨️","🧣"] },
+    { target:"🕶️", hint:{ fr:"Neo",            en:"Neo"           }, solution:["💻","🐇","💊","🥋"] },
+    { target:"👂",  hint:{ fr:"Vincent",        en:"Vincent"       }, solution:["🎨","🌻","🔪","🖌️"] },
+    { target:"🧝‍♀️", hint:{ fr:"Légende",     en:"Legend"        }, solution:["🗡️","🛡️","🧚","🏰"] },
+    { target:"🏔️🏔️", hint:{ fr:"Twin",     en:"Twin"        }, solution:["👨🏻‍💼","☕","🦉","🪵"] },
+    { target:"🧙‍♂️", hint:{ fr:"Placard",     en:"Closet"        }, solution:["⚡","🦉","🪄","📚"] },
+   { target:"🏨",  hint:{ fr:"Redrum",      en:"Redrum"     }, solution:["🪓","🚪","👭🏻","🥶"] },
+    { target:"🍕",  hint:{ fr:"Margherita",     en:"Margherita"    }, solution:["🍅","🧀","👨‍🍳","🤌"] },
+    { target:"💎",  hint:{ fr:"Heisenberg",     en:"Heisenberg"    }, solution:["🚐","⚗️","🌵","🥽"] },
+   { target:"🪎",  hint:{ fr:"Stevenson",     en:"Stevenson"    }, solution:["🏴‍☠️","🗺️","🧭","🏝️"] },
+
+
+  ]
+
+};
+
+// ============================================================
+// 🎲 PIOCHE — ne pas modifier
+// ============================================================
+
+function piocher(liste, n) {
+  const melange = [...liste].sort(() => Math.random() - 0.5);
+  return melange.slice(0, Math.min(n, liste.length));
+}
+
+function genererPartie() {
+  return [
+    ...piocher(CATALOGUE.taille2, 14),
+    ...piocher(CATALOGUE.taille3, 14),
+    ...piocher(CATALOGUE.taille4, 14),
+  ];
+}
+
+// ============================================================
+
+const DISTRACTORS = [
+  "🌍","🎸","​​​​🚲​","🍦","🐖","🎭","🥑","🦊","🏖️","🎪",
+  "🚂","🍄","🦁","🎯","🌙","♟️","🐘​","🎲","🏰","🎁",
+  "🦆","🎵","🍋","🐧","🎀","🐌","🍇","🐮","👩‍🦽","🌋",
+  "🎻","🦅","🍓","🦩","🍉","🛝","🎡","🧁","🧵","🌵",
+  "🤖","👄","💣","👠","🎱","🎺","🐞","🍔","🏍️","💿",
+  "🔫","🏀","🧸","🍩","🧿","💾","📼","☂️","🔭","📢",
+  "👻​","🪰","​🐥​","​​🍙​","​​​🚁​","​​​​💡","🍌","​​​​​🛒​","​​​​​🛁​","​​​​​​​⛽​",
+ "🏋️","🫆","🐨","🌶️","🏺","🚑","🧨","🛷","🎰","🪞",
+ "🍺","🍭","🏗️","🛼","🚡","🪐","🎳","🪭","🐑","📫"
+];
+
+let PUZZLES = [];
+let currentPuzzleIndex = 0;
+let slots = [];
+let livesLeft = 4;
+let gameOver = false;
+let score = 0;
+let draggedEmoji = null;
+let draggedFrom = null;
+let isSpeedrun = false;
+let chronoInterval = null;
+let chronoSeconds = 0;
+let bestTime = localStorage.getItem("comboji_best_time") ? parseInt(localStorage.getItem("comboji_best_time")) : null;
+
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
+    [array[i], array[j]] = [array[j], array[i]];
   }
-  return arr;
+  return array;
 }
 
-async function loadRound() {
-  answersLocked = false;
-  hintUsed = false;
+function formatTime(s) {
+  const m = String(Math.floor(s / 60)).padStart(2, "0");
+  const sec = String(s % 60).padStart(2, "0");
+  return `⏱️ ${m}:${sec}`;
+}
 
-  document.getElementById("images-grid").innerHTML = "";
-  document.getElementById("intro-box").style.display = "none";
-  document.getElementById("gameover").style.display = "none";
-  document.getElementById("hint-btn").style.display = "inline-block";
-  document.getElementById("hint-btn").disabled = false;
-  document.getElementById("loading").textContent = "Chargement...";
-  setMessage("");
+function startChrono() {
+  chronoSeconds = 0;
+  document.getElementById("chronoDisplay").style.display = "block";
+  document.getElementById("chronoDisplay").textContent = formatTime(0);
+  clearInterval(chronoInterval);
+  chronoInterval = setInterval(() => {
+    chronoSeconds++;
+    document.getElementById("chronoDisplay").textContent = formatTime(chronoSeconds);
+  }, 1000);
+}
 
-  try {
-    const imageCount = getImageCount();
-    const article = await fetchRandomArticle();
-    correctImageUrl = article.image;
+function stopChrono() {
+  clearInterval(chronoInterval);
+}
 
-    const decoys = await fetchRandomImages(imageCount - 1);
-    const allImages = shuffle([correctImageUrl, ...decoys.slice(0, imageCount - 1)]);
+function startGame(speedrun = false) {
+  isSpeedrun = speedrun;
+  PUZZLES = genererPartie();
+  currentPuzzleIndex = 0;
+  score = 0;
+  livesLeft = 4;
+  gameOver = false;
+  document.getElementById("titleScreen").style.display = "none";
+  document.getElementById("game").style.display = "contents";
+  document.getElementById("chronoDisplay").style.display = "none";
+  if (isSpeedrun) startChrono();
+  loadPuzzle();
+  updateLives();
+}
 
-    document.getElementById("article-title").textContent = article.title;
-    document.getElementById("loading").textContent = "";
+function getCurrentPuzzle() { return PUZZLES[currentPuzzleIndex]; }
 
-    const grid = document.getElementById("images-grid");
-    allImages.forEach(url => {
-      const card = document.createElement("div");
-      card.className = "img-card";
-      const img = document.createElement("img");
-      img.src = url;
-      img.onerror = () => { card.style.display = "none"; };
-      card.appendChild(img);
-      card.onclick = () => handleAnswer(card, url);
-      grid.appendChild(card);
+function buildGrid() {
+  const puzzle = getCurrentPuzzle();
+  const solution = puzzle.solution;
+  const needed = 16 - solution.length;
+  const distractors = [...DISTRACTORS]
+    .filter(d => !solution.includes(d))
+    .sort(() => Math.random() - 0.5)
+    .slice(0, needed);
+  const allEmojis = shuffle([...solution, ...distractors]); // ← Fisher-Yates
+
+
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+
+  allEmojis.forEach((emoji) => {
+    const cell = document.createElement("div");
+    cell.className = "emoji-cell";
+    cell.textContent = emoji;
+    cell.draggable = true;
+    cell.dataset.emoji = emoji;
+
+    cell.addEventListener("dragstart", () => {
+      draggedEmoji = emoji;
+      draggedFrom = "grid";
+      cell.classList.add("dragging");
+    });
+    cell.addEventListener("dragend", () => cell.classList.remove("dragging"));
+
+    cell.addEventListener("click", () => {
+	soundPop();
+      if (gameOver || cell.classList.contains("used")) return;
+      const emptyIndex = slots.indexOf(null);
+      if (emptyIndex !== -1) {
+        slots[emptyIndex] = emoji;
+        buildSlots();
+        updateValidateBtn();
+      }
     });
 
-    document.getElementById("hint-btn").onclick = () => showHint(article.intro);
-
-  } catch (e) {
-    document.getElementById("loading").textContent = "Erreur de chargement, on réessaie...";
-    setTimeout(loadRound, 2000);
-  }
-}
-
-function showHint(intro) {
-  if (hintUsed) return;
-  hintUsed = true;
-  document.getElementById("hint-btn").disabled = true;
-
-  lives--;
-  updateHUD();
-
-  const box = document.getElementById("intro-box");
-  box.style.display = "block";
-  box.textContent = intro || "Pas d'intro disponible.";
-
-  if (lives <= 0) {
-    setTimeout(gameOver, 600);
-  }
-}
-
-function handleAnswer(card, url) {
-  if (answersLocked) return;
-
-  if (url === correctImageUrl) {
-    card.classList.add("correct");
-    streak++;
-    updateHUD();
-    setMessage("✅ Bonne réponse !");
-    answersLocked = true;
-    setTimeout(loadRound, 1200);
-  } else {
-    card.classList.add("wrong");
-    lives--;
-    updateHUD();
-    setMessage("❌ Raté !");
-
-    if (lives <= 0) {
-      revealCorrect();
-      setTimeout(gameOver, 1200);
-    }
-  }
-}
-
-function revealCorrect() {
-  document.querySelectorAll(".img-card").forEach(card => {
-    const img = card.querySelector("img");
-    if (img.src === correctImageUrl) {
-      card.classList.add("reveal-correct");
-    }
+    grid.appendChild(cell);
   });
 }
 
-function gameOver() {
-  answersLocked = true;
+function buildSlots() {
+  const puzzle = getCurrentPuzzle();
+  const slotCount = puzzle.solution.length;
+  const container = document.getElementById("slots");
+  container.innerHTML = "";
 
-  if (streak > record) {
-    record = streak;
-    localStorage.setItem("wikiphoto_record", record);
+  const gridCells = document.querySelectorAll(".emoji-cell");
+  gridCells.forEach(c => c.classList.remove("used"));
+  const tempCount = {};
+  slots.filter(s => s !== null).forEach(e => { tempCount[e] = (tempCount[e] || 0) + 1; });
+  const marked = {};
+  gridCells.forEach(cell => {
+    const e = cell.dataset.emoji;
+    if (tempCount[e] && (marked[e] || 0) < tempCount[e]) {
+      cell.classList.add("used");
+      marked[e] = (marked[e] || 0) + 1;
+    }
+  });
+
+  for (let i = 0; i < slotCount; i++) {
+    const slot = document.createElement("div");
+    slot.className = "slot";
+    slot.id = `slot-${i}`;
+
+    if (slots[i]) {
+      slot.textContent = slots[i];
+      const btn = document.createElement("button");
+      btn.className = "remove-btn";
+      btn.textContent = "✕";
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        slots[i] = null;
+        buildSlots();
+        updateValidateBtn();
+      });
+      slot.appendChild(btn);
+    }
+
+    slot.addEventListener("dragover", (e) => { e.preventDefault(); slot.classList.add("drag-over"); });
+    slot.addEventListener("dragleave", () => slot.classList.remove("drag-over"));
+    slot.addEventListener("drop", (e) => {
+      e.preventDefault();
+      slot.classList.remove("drag-over");
+      if (draggedEmoji && !gameOver) {
+        if (draggedFrom !== "grid") slots[draggedFrom] = null;
+        slots[i] = draggedEmoji;
+        buildSlots();
+        updateValidateBtn();
+      }
+    });
+
+    slot.draggable = !!slots[i];
+    slot.addEventListener("dragstart", () => {
+      if (!slots[i]) return;
+      draggedEmoji = slots[i];
+      draggedFrom = i;
+    });
+
+    container.appendChild(slot);
   }
-
-  document.getElementById("images-grid").innerHTML = "";
-  document.getElementById("article-title").textContent = "WikiPhoto";
-  document.getElementById("hint-btn").style.display = "none";
-  document.getElementById("intro-box").style.display = "none";
-  setMessage("");
-
-  document.getElementById("go-streak").textContent = `Score : ${streak}`;
-  document.getElementById("go-record").textContent = `Record : ${record}`;
-  document.getElementById("gameover").style.display = "flex";
-
-  document.getElementById("restart-btn").onclick = () => {
-    lives = 3;
-    streak = 0;
-    updateHUD();
-    loadRound();
-  };
 }
 
-updateHUD();
-loadRound();
-</script>
+function updateLives() {
+  document.getElementById("lives").textContent =
+    "❤️".repeat(livesLeft) + "🖤".repeat(4 - livesLeft);
+}
 
-<footer>
-  Un jeu de déduction par <a href="https://www.instagram.com/patrick_baud" target="_blank">Patrick Baud</a>
-</footer>
+function updateValidateBtn() {
+  document.getElementById("validateBtn").disabled = slots.includes(null) || gameOver;
+}
+
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx;
+function getCtx() { if (!audioCtx) audioCtx = new AudioCtx(); return audioCtx; }
+function playTone(freq, type, duration, vol=0.3) {
+  const ctx = getCtx();
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
+  o.connect(g); g.connect(ctx.destination);
+  o.type = type; o.frequency.setValueAtTime(freq, ctx.currentTime);
+  g.gain.setValueAtTime(vol, ctx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+  o.start(); o.stop(ctx.currentTime + duration);
+}
+function soundCorrect() { playTone(660,"sine",0.2); }
+function soundWrong()   { playTone(180,"sawtooth",0.3); }
+function soundWin()     { [523,659,784,1047].forEach((f,i) => setTimeout(()=>playTone(f,"sine",0.3),i*120)); }
+function soundLose()    { playTone(150,"sawtooth",0.8,0.4); }
+
+function soundPop() {
+  const ctx = getCtx();
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = "triangle";
+  osc.frequency.setValueAtTime(500, ctx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.08);
+  gain.gain.setValueAtTime(0.15, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start();
+  osc.stop(ctx.currentTime + 0.08);
+}
+
+function spawnConfetti() {
+  const colors = ["#e94560","#4caf50","#ffd700","#00bcd4","#ff9800"];
+  for (let i = 0; i < 80; i++) {
+    const el = document.createElement("div");
+    el.className = "confetti-piece";
+    el.style.left = Math.random() * 100 + "vw";
+    el.style.background = colors[Math.floor(Math.random()*colors.length)];
+    el.style.animationDuration = (1.5 + Math.random() * 2) + "s";
+    el.style.animationDelay = (Math.random() * 0.5) + "s";
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 4000);
+  }
+}
+function spawnFireworks() {
+  const colors = ["#e94560","#ffd700","#00bcd4","#ff9800","#ee48a5","#4caf50","#ffffff"];
+
+  function oneExplosion(x, y) {
+  playBoom(); // 💥
+    const count = 28;
+    for (let i = 0; i < count; i++) {
+      const el = document.createElement("div");
+      el.className = "firework-particle";
+      const angle = (2 * Math.PI / count) * i;
+      const force = 80 + Math.random() * 120;
+      el.style.left = x + "px";
+      el.style.top = y + "px";
+      el.style.background = colors[Math.floor(Math.random() * colors.length)];
+      el.style.setProperty("--dx", Math.cos(angle) * force + "px");
+      el.style.setProperty("--dy", Math.sin(angle) * force + "px");
+      el.style.animationDuration = (0.8 + Math.random() * 0.8) + "s";
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 2000);
+    }
+  }
+
+ function playBoom() {
+    const ctx = getCtx(); // ← le contexte partagé que tu as déjà !
+    const buffer = ctx.createBuffer(1, ctx.sampleRate * 0.6, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < data.length; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / data.length, 2);
+    }
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.8, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+    const filter = ctx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.value = 400;
+    source.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    source.start();
+  }
+  const positions = [
+    { x: window.innerWidth * 0.2,  y: window.innerHeight * 0.3  },
+    { x: window.innerWidth * 0.8,  y: window.innerHeight * 0.25 },
+    { x: window.innerWidth * 0.5,  y: window.innerHeight * 0.2  },
+    { x: window.innerWidth * 0.35, y: window.innerHeight * 0.5  },
+    { x: window.innerWidth * 0.65, y: window.innerHeight * 0.45 },
+  ];
+  positions.forEach((pos, i) => {
+    setTimeout(() => oneExplosion(pos.x, pos.y), i * 350);
+  });
+}
+function validate() {
+  if (gameOver) return;
+  document.getElementById("validateBtn").disabled = true;
+  document.getElementById("message").textContent = "";
+
+  const solution = getCurrentPuzzle().solution;
+  const playerSet = [...slots].sort().join("|");
+  const solutionSet = [...solution].sort().join("|");
+  const won = playerSet === solutionSet;
+
+  slots.forEach((emoji, i) => {
+    const slot = document.getElementById(`slot-${i}`);
+    slot.classList.remove("correct","wrong","shake");
+    setTimeout(() => {
+      if (solution.includes(emoji)) { slot.classList.add("correct"); soundCorrect(); }
+      else                          { slot.classList.add("wrong");   soundWrong(); }
+    }, i * 300);
+  });
+
+  setTimeout(() => {
+    if (won) {
+      score++;
+      soundWin();
+      spawnConfetti();
+      gameOver = true;
+      setTimeout(() => showWinPanel(), 900);
+    } else {
+      livesLeft--;
+      updateLives();
+      slots.forEach((_, i) => {
+        const slot = document.getElementById(`slot-${i}`);
+        setTimeout(() => slot.classList.add("shake"), i * 100);
+      });
+      if (livesLeft <= 0) {
+        soundLose();
+        gameOver = true;
+        setTimeout(() => showLosePanel(), 900);
+      } else {
+        document.getElementById("message").textContent = T[LANG].missed(livesLeft);
+        setTimeout(() => {
+          slots = new Array(getCurrentPuzzle().solution.length).fill(null);
+          buildSlots();
+          updateValidateBtn();
+        }, 1200);
+      }
+    }
+  }, slots.length * 300 + 300);
+}
+
+function showWinPanel() {
+  const puzzle = getCurrentPuzzle();
+  document.getElementById("winEmoji").textContent = puzzle.target;
+  document.getElementById("winTitle").textContent = T[LANG].comboOk;
+  document.getElementById("winScore").textContent = T[LANG].score(score);
+  document.getElementById("winPanel").classList.add("show");
+}
+
+function soundVictory() {
+  const ctx = new AudioContext();
+  const melody = [
+    [523, 0.0, 0.15],
+    [659, 0.15, 0.15],
+    [784, 0.30, 0.15],
+    [1046, 0.45, 0.4],
+    [880, 0.85, 0.15],
+    [1046, 1.0, 0.6],
+  ];
+  melody.forEach(([freq, start, duration]) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.4, ctx.currentTime + start);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + duration);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(ctx.currentTime + start);
+    osc.stop(ctx.currentTime + start + duration + 0.1);
+  });
+}
+
+function showLosePanel() {
+  if (isSpeedrun) stopChrono();
+  document.getElementById("loseScore").textContent = T[LANG].loseScore(score);
+  document.getElementById("losePanel").classList.add("show");
+}
+
+function showLevelPanel(levelNum) {
+  document.getElementById("levelTitle").textContent =
+    levelNum === 2 ? T[LANG].level2title : T[LANG].level3title;
+  document.getElementById("levelSubtitle").textContent =
+    levelNum === 2 ? T[LANG].level2sub : T[LANG].level3sub;
+  document.getElementById("levelPanel").classList.add("show");
+}
+
+function nextPuzzle() {
+  document.getElementById("winPanel").classList.remove("show");
+  currentPuzzleIndex++;
+
+  if (currentPuzzleIndex === 14 || currentPuzzleIndex === 28) {
+    const levelNum = currentPuzzleIndex === 14 ? 2 : 3;
+    showLevelPanel(levelNum);
+    return;
+  }
+
+ if (currentPuzzleIndex >= PUZZLES.length) {
+  soundVictory();
+  spawnFireworks();
+
+  let timeText = "";
+  let recordText = "";
+
+  if (isSpeedrun) {
+    stopChrono();
+    const m = String(Math.floor(chronoSeconds / 60)).padStart(2,"0");
+    const s = String(chronoSeconds % 60).padStart(2,"0");
+    timeText = `\n⏱️: ${m}:${s}`;
+
+    if (bestTime === null || chronoSeconds < bestTime) {
+      bestTime = chronoSeconds;
+      localStorage.setItem("comboji_best_time", bestTime);
+      recordText = "\n 🥇 Nouveau record !";
+    }
+  }
+
+  document.getElementById("winEmoji").textContent = "🏆";
+  document.getElementById("winTitle").textContent = T[LANG].allDone;
+  document.getElementById("winScore").textContent =
+    T[LANG].finalScore(score, PUZZLES.length) + timeText + recordText;
+  document.getElementById("shareBtn").style.display = "block";
+  document.getElementById("kofiBtn").style.display = "block";
+  document.getElementById("continueBtn").textContent = T[LANG].restart;
+  document.getElementById("winPanel").classList.add("show");
+  return;
+}
+
+
+  livesLeft = 4;
+  gameOver = false;
+  document.getElementById("message").textContent = "";
+  updateLives();
+  loadPuzzle();
+}
+
+function resetGame() {
+  stopChrono();
+  document.getElementById("chronoDisplay").style.display = "none";
+  isSpeedrun = false;
+  PUZZLES = genererPartie();
+  currentPuzzleIndex = 0;
+  score = 0;
+  livesLeft = 4;
+  gameOver = false;
+  document.getElementById("winPanel").classList.remove("show");
+  document.getElementById("shareBtn").style.display = "none";
+  document.getElementById("kofiBtn").style.display = "none";
+  document.getElementById("continueBtn").textContent = T[LANG].continue;
+  document.getElementById("losePanel").classList.remove("show");
+  document.getElementById("message").textContent = "";
+  updateLives();
+  loadPuzzle();
+}
+
+function loadPuzzle() {
+  const puzzle = getCurrentPuzzle();
+  document.getElementById("targetEmoji").textContent = puzzle.target;
+  document.getElementById("hintBox").textContent =
+    `${T[LANG].hint} : ${puzzle.hint[LANG]}`;
+  slots = new Array(puzzle.solution.length).fill(null);
+  buildGrid();
+  buildSlots();
+  updateValidateBtn();
+}
+
+document.getElementById("validateBtn").addEventListener("click", validate);
+
+document.getElementById("continueBtn").addEventListener("click", () => {
+  if (currentPuzzleIndex >= PUZZLES.length) {
+    resetGame();
+  } else {
+    nextPuzzle();
+  }
+});
+
+document.getElementById("restartBtn").addEventListener("click", resetGame);
+
+document.getElementById("levelContinueBtn").addEventListener("click", () => {
+  document.getElementById("levelPanel").classList.remove("show");
+  livesLeft = 4;
+  gameOver = false;
+  document.getElementById("message").textContent = "";
+  updateLives();
+  loadPuzzle();
+});
+
+document.getElementById("shareBtn").addEventListener("click", () => {
+  const text = T[LANG].shareText(score, PUZZLES.length);
+  if (navigator.share) {
+    navigator.share({ text });
+  } else {
+    navigator.clipboard.writeText(text);
+    alert(T[LANG].clipboardMsg);
+  }
+});
+
+// ============================================================
+// 🚀 INIT
+// ============================================================
+applyTranslations();
+document.getElementById("playBtn").addEventListener("click", () => startGame(false));
+document.getElementById("speedrunBtn").addEventListener("click", () => startGame(true));
+
+</script>
 </body>
 </html>
