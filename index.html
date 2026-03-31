@@ -43,7 +43,13 @@
   }
   .target-label { font-size: 0.9rem; opacity: 0.7; }
   .target-label strong { font-weight: 800; }
-  .target-emoji { font-size: 3rem; }
+  .target-emoji { font-size: 3rem;
+   animation: floatTarget 3s ease-in-out infinite;}
+ 
+ @keyframes floatTarget {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-6px); }
+}
   .hint-box { font-size: 0.85rem; opacity: 0.6; letter-spacing: 1px; }
 
   .grid {
